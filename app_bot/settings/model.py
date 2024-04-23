@@ -6,22 +6,38 @@ class BotSettings(BaseModel):
     bot_token: SecretStr = fields.Field(max_length=100, alias='TELEGRAM_BOT_TOKEN')
     bot_link: str = fields.Field(max_length=100, alias='BOT_BASE_LINK')
     admin_password: SecretStr = fields.Field(max_length=100, alias='ADMIN_PASSWORD')
-    admin_chat_id: str = fields.Field(alias='ADMIN_CHAT_ID')
-    admin_chat_link: str = fields.Field(alias='ADMIN_CHAT_LINK')
     required_channel_id: str = fields.Field(alias='REQUIRED_CHANNEL_ID')
-    welcome_post_id: int = fields.Field(alias='WELCOME_POST_ID')
+
+
+class StaticContent(BaseModel):
+    welcome_post_id: int = fields.Field(alias='welcome_post_id'.upper())
+    info_post_id: int = fields.Field(alias='info_post_id'.upper())
+    socials_post_id: int = fields.Field(alias='socials_post_id'.upper())
+    addresses_post_id: int = fields.Field(alias='addresses_post_id'.upper())
+    payment_data_post_id: int = fields.Field(alias='payment_data_post_id'.upper())
+    delivery_post_id: int = fields.Field(alias='delivery_post_id'.upper())
+    requirements_post_id: int = fields.Field(alias='requirements_post_id'.upper())
+    poizon_post_id: int = fields.Field(alias='poizon_post_id'.upper())
+    contract_post_id: int = fields.Field(alias='contract_post_id'.upper())
+    cases_post_id: int = fields.Field(alias='cases_post_id'.upper())
+    reviews_post_id: int = fields.Field(alias='reviews_post_id'.upper())
+    currency_post_id: int = fields.Field(alias='currency_post_id'.upper())
+
     notification_post_id: int = fields.Field(alias='NOTIFICATION_POST_ID')
     registered_post_id: int = fields.Field(alias='REGISTERED_POST_ID')
+
 
 class Dialogues(BaseModel):
     categories_per_page_height: int = fields.Field(alias='CATEGORIES_HEIGHT')
     categories_per_page_width: int = fields.Field(alias='CATEGORIES_WIDTH')
+
 
 class Broadcaster(BaseModel):
     mailing_batch_size: int = fields.Field(alias='MAILING_BATCH_SIZE', default=25)
     broadcaster_sleep: int = fields.Field(alias='BROADCASTER_SLEEP', default=1)
     notification_hours: int = fields.Field(alias='NOTIFICATION_HOURS', default=10)
     notification_minutes: int = fields.Field(alias='NOTIFICATION_MINUTES', default=0)
+
 
 class AppSettings(BaseModel):
     prod_mode: bool = fields.Field(alias='PROD_MODE', default=False)
@@ -44,6 +60,7 @@ class RedisSettings(BaseModel):
 
 class Settings(
     BotSettings,
+    StaticContent,
     AppSettings,
     PostgresSettings,
     Broadcaster,

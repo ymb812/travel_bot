@@ -6,9 +6,9 @@ from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, C
     FirstPage, LastPage, SwitchTo, Select
 from aiogram_dialog.widgets.input import TextInput
 from core.dialogs.getters import get_exhibits_by_museum
-from core.dialogs.callbacks import CallBackHandler
+from core.dialogs.callbacks import MainMenuCallbackHandler
 from core.states.main_menu import MainMenuStateGroup
-from core.states.catalog import CatalogStateGroup
+from core.states.calculator import CalculatorStateGroup
 from core.utils.texts import _
 
 
@@ -17,7 +17,7 @@ statuses_select = Select(
     items='statuses',
     item_id_getter=lambda item: item.name,
     text=Format(text='{item.value}'),
-    on_click=CallBackHandler.selected_status,
+    on_click=MainMenuCallbackHandler.selected_status,
 )
 
 catalog_dialog = Dialog(
@@ -42,7 +42,7 @@ catalog_dialog = Dialog(
             Start(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu)
         ),
         getter=get_exhibits_by_museum,
-        state=CatalogStateGroup.status,
+        state=CalculatorStateGroup.status,
     ),
 
     # problem input
@@ -51,13 +51,13 @@ catalog_dialog = Dialog(
         TextInput(
             id='input_problem',
             type_factory=str,
-            on_success=CallBackHandler.entered_problem
+            on_success=MainMenuCallbackHandler.entered_problem
         ),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_catalog', state=CatalogStateGroup.status,
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_catalog', state=CalculatorStateGroup.status,
                  when=~F.get('start_data').get('inline_mode')),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_exhibit_page', state=CatalogStateGroup.exhibit,
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_exhibit_page', state=CalculatorStateGroup.exhibit,
                  when=F.get('start_data').get('inline_mode')),
-        state=CatalogStateGroup.problem
+        state=CalculatorStateGroup.problem
     ),
 
     # exhibit from inline
@@ -69,6 +69,6 @@ catalog_dialog = Dialog(
             Start(Const(text=_('BACK_BUTTON')), id='go_to_inline', state=MainMenuStateGroup.exhibit)
         ),
         getter=get_exhibits_by_museum,
-        state=CatalogStateGroup.exhibit
+        state=CalculatorStateGroup.exhibit
     ),
 )
