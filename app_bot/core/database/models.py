@@ -55,17 +55,33 @@ class Request(Model):
         table = 'requests'
         ordering = ['created_at']
 
+    class RequestType(Enum):
+        calculator = 'calculator'
+        manager_help = 'manager_help'
+
     id = fields.UUIDField(pk=True)
-    user = fields.ForeignKeyField('models.User', to_field='user_id')
-    type = fields.CharField(max_length=64, null=True)
-    has_worked = fields.CharField(max_length=8, null=True)
-    from_where = fields.CharField(max_length=64, null=True)
+    user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='requests_user')
+    type = fields.CharEnumField(enum_type=RequestType, max_length=64, null=True)
 
     calculator_data = fields.CharField(max_length=4096, null=True)
     calculator_photo = fields.CharField(max_length=256, null=True)
 
+    has_worked = fields.CharField(max_length=8, null=True)
+    from_where = fields.CharField(max_length=64, null=True)
+
     is_in_process = fields.BooleanField(default=False)
+    manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True, related_name='requests_manager')
     created_at = fields.DatetimeField(auto_now_add=True)
+
+
+class FAQ(Model):
+    class Meta:
+        table = 'faq'
+
+    id = fields.BigIntField(pk=True)
+    question = fields.CharField(max_length=512)
+    video_file_id = fields.CharField(max_length=256)
+    order_priority = fields.IntField(unique=True)
 
 
 class Dispatcher(Model):

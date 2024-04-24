@@ -1,7 +1,7 @@
 import json
 import logging
 from aiogram import types, Router, F, Bot
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command, CommandObject, StateFilter
 from aiogram.fsm.context import FSMContext
 from broadcaster import Broadcaster
 from core.database.models import User
@@ -60,7 +60,7 @@ async def admin_team_approve_handler(callback: types.CallbackQuery, bot: Bot, st
 
 
 # get file_id for broadcaster
-@router.message(F.video | F.video_note | F.photo | F.audio | F.animation | F.sticker | F.document)
+@router.message(Command(commands=['get_content']), F.video | F.video_note | F.photo | F.audio | F.animation | F.sticker | F.document)
 async def get_hash(message: types.Message):
     if (await User.get(user_id=message.from_user.id)).status != 'admin':
         return
