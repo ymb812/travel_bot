@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from import_export.resources import ModelResource
-from admin_panel.models import User, Request, Dispatcher, Post
+from admin_panel.models import User, Request, FAQ, Dispatcher, Post
 
 
 class CustomImportExport(ImportExportModelAdmin, ExportActionModelAdmin):
@@ -23,10 +23,16 @@ class UserAdmin(CustomImportExport):
 
 
 @admin.register(Request)
-class ExhibitAdmin(CustomImportExport):
+class RequestAdmin(CustomImportExport):
     list_display = [field.name for field in Request._meta.fields]
     list_editable = [field.name for field in Request._meta.fields if field.name != 'id' and field.name != 'created_at']
     list_filter = ('user',)
+
+
+@admin.register(FAQ)
+class FAQAdmin(CustomImportExport):
+    list_display = [field.name for field in FAQ._meta.fields]
+    list_editable = [field.name for field in FAQ._meta.fields if field.name != 'id' and field.name != 'created_at']
 
 
 @admin.register(Dispatcher)
