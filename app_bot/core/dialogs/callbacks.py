@@ -16,6 +16,18 @@ logger = logging.getLogger(__name__)
 
 class MainMenuCallbackHandler:
     @classmethod
+    async def selected_product(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        dialog_manager.dialog_data['question_id'] = item_id
+        await dialog_manager.switch_to(MainMenuStateGroup.faq)
+
+
+    @classmethod
     async def main_menu_content(
             cls,
             callback: CallbackQuery,
@@ -25,19 +37,8 @@ class MainMenuCallbackHandler:
         pass
 
 
-    @classmethod
-    async def selected_status(
-            cls,
-            callback: CallbackQuery,
-            widget: Select,
-            dialog_manager: DialogManager,
-            item_id: str,
-    ):
-        pass
-
-
     @staticmethod
-    async def entered_problem(
+    async def entered_fio(
             message: Message,
             widget: ManagedTextInput,
             dialog_manager: DialogManager,

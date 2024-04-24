@@ -1,5 +1,5 @@
 from aiogram.enums import ContentType
-from core.database.models import User, Post
+from core.database.models import User, FAQ, Post
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 from settings import settings
@@ -51,7 +51,22 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def get_bot_data(dialog_manager: DialogManager, **kwargs):
+async def get_questions(dialog_manager: DialogManager, **kwargs):
+    questions = await FAQ.all().order_by('order_priority')
+    questions_texts = ''
+    for question in questions:
+        questions_texts += f'{question.order_priority}. {question.question}\n\n'
+
     return {
-        'bot_username': (await dialog_manager.event.bot.get_me()).username
+        'questions': questions,
+        'questions_texts': questions_texts,
+    }
+
+
+async def get_question(dialog_manager: DialogManager, **kwargs):
+    question = await FAQ.get(id=dialog_manager.dialog_data['question_id'])
+    media_content = MediaAttachment(ContentType.VIDEO, url=question.video_file_id)
+
+    return {
+        'media_content': media_content,
     }

@@ -68,6 +68,16 @@ class Request(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
 
 
+class FAQ(Model):
+    class Meta:
+        table = 'faq'
+
+    id = fields.BigIntField(pk=True)
+    question = fields.CharField(max_length=512)
+    video_file_id = fields.CharField(max_length=256)
+    order_priority = fields.IntField(unique=True)
+
+
 class Dispatcher(Model):
     class Meta:
         table = 'mailings'

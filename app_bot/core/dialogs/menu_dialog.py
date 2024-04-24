@@ -2,13 +2,14 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start
+from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start, Select
 from core.states.main_menu import MainMenuStateGroup
 from core.states.calculator import CalculatorStateGroup
 from core.states.manager import ManagerStateGroup
 from core.utils.texts import _
+from core.dialogs.custom_content import CustomPager
 from core.dialogs.callbacks import MainMenuCallbackHandler
-from core.dialogs.getters import get_main_menu_content
+from core.dialogs.getters import get_main_menu_content, get_questions, get_question
 from settings import settings
 
 
@@ -76,5 +77,34 @@ main_menu_dialog = Dialog(
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         getter=get_main_menu_content,
         state=MainMenuStateGroup.cases_reviews_currency
+    ),
+
+    # pick faq
+    Window(
+        Format(text='{questions_texts}'),
+        CustomPager(
+            Select(
+                id='_question_select',
+                items='questions',
+                item_id_getter=lambda item: item.id,
+                text=Format(text='Вопрос {item.order_priority}'),
+                on_click=MainMenuCallbackHandler.selected_product,
+            ),
+            id='question_group',
+            height=settings.categories_per_page_height,
+            width=settings.categories_per_page_width,
+            hide_on_single_page=True,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        getter=get_questions,
+        state=MainMenuStateGroup.pick_faq,
+    ),
+
+    # faq
+    Window(
+        DynamicMedia(selector='media_content'),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
+        getter=get_question,
+        state=MainMenuStateGroup.faq
     ),
 )
