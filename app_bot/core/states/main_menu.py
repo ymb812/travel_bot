@@ -14,3 +14,6 @@ class MainMenuStateGroup(StatesGroup):
     faq = State()
 
     cases_reviews_currency = State()
+
+    pick_calculator = State()
+    input_calculator_data = State()

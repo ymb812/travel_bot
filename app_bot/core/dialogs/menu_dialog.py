@@ -1,5 +1,6 @@
+from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.input import TextInput
+from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start, Select
@@ -24,7 +25,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
-            Start(Const(text='Калькулятор доставки'), id='go_to_calculator', state=CalculatorStateGroup.menu),
+            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
             Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerStateGroup.input_fio),
         ),
         state=MainMenuStateGroup.menu,
@@ -97,7 +98,7 @@ main_menu_dialog = Dialog(
         ),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         getter=get_questions,
-        state=MainMenuStateGroup.pick_faq,
+        state=MainMenuStateGroup.pick_faq
     ),
 
     # faq
@@ -106,5 +107,17 @@ main_menu_dialog = Dialog(
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
         getter=get_question,
         state=MainMenuStateGroup.faq
+    ),
+
+    # calculator_data input
+    Window(
+        Const(text=_('INPUT_CALCULATOR_DATA')),
+        MessageInput(
+            func=MainMenuCallbackHandler.entered_calculator_data,
+            content_types=[ContentType.TEXT, ContentType.PHOTO]
+        ),
+        Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerStateGroup.input_fio),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        state=MainMenuStateGroup.pick_calculator
     ),
 )
