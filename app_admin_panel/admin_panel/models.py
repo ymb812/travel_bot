@@ -57,16 +57,22 @@ class Request(models.Model):
         verbose_name = 'Заявки для менеджеров'
         verbose_name_plural = verbose_name
 
+    class RequestType(models.TextChoices):
+        calculator = 'calculator', 'calculator'
+        manager_help = 'manager_help', 'manager_help'
+
     id = models.UUIDField(primary_key=True)
-    user = models.ForeignKey('User', to_field='user_id', on_delete=models.CASCADE)
-    type = models.CharField(max_length=64, null=True)
-    has_worked = models.CharField(max_length=8, null=True)
-    from_where = models.CharField(max_length=64, null=True)
+    user = models.ForeignKey('User', to_field='user_id', related_name='requests_user', on_delete=models.CASCADE)
+    type = models.CharField(choices=RequestType, max_length=64, null=True)
 
     calculator_data = models.CharField(max_length=4096, null=True)
     calculator_photo = models.CharField(max_length=256, null=True)
 
+    has_worked = models.CharField(max_length=8, null=True)
+    from_where = models.CharField(max_length=64, null=True)
+
     is_in_process = models.BooleanField(default=False)
+    manager = models.ForeignKey('User', to_field='user_id', related_name='requests_manager', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
