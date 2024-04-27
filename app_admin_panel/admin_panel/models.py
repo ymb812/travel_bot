@@ -65,12 +65,13 @@ class Request(models.Model):
     user = models.ForeignKey('User', to_field='user_id', related_name='requests_user', on_delete=models.CASCADE)
     type = models.CharField(choices=RequestType, max_length=64, null=True)
 
-    calculator_data = models.CharField(max_length=4096, null=True)
-    calculator_photo = models.CharField(max_length=256, null=True)
+    calculator_data = models.CharField(max_length=4096, blank=True, null=True)
+    calculator_photo = models.CharField(max_length=256, blank=True, null=True)
 
-    has_worked = models.CharField(max_length=8, null=True)
-    from_where = models.CharField(max_length=64, null=True)
+    has_worked = models.CharField(max_length=8, blank=True, null=True)
+    from_where = models.CharField(max_length=64, blank=True, null=True)
 
+    manager_answer = models.CharField(max_length=4096, blank=True, null=True)
     is_in_process = models.BooleanField(default=False)
     manager = models.ForeignKey('User', to_field='user_id', related_name='requests_manager', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -101,7 +102,7 @@ class Post(models.Model):
 
     id = models.BigIntegerField(primary_key=True)
     text = models.TextField(blank=True, null=True)
-    designation = models.CharField(max_length=256, blank=True, null=True) # to understand what does post mean
+    designation = models.CharField(max_length=256, blank=True, null=True)  # to understand what does post mean
     photo_file_id = models.CharField(max_length=256, blank=True, null=True)
     video_file_id = models.CharField(max_length=256, blank=True, null=True)
     video_note_id = models.CharField(max_length=256, blank=True, null=True)
