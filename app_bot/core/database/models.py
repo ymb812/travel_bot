@@ -89,7 +89,7 @@ class Request(Model):
         request = await Request.create(
             id=id,
             user_id=user_id,
-            type=type,
+            type=type.value,
             calculator_data=calculator_data,
             calculator_photo=calculator_photo,
             support_data=support_data,
