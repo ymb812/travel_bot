@@ -60,7 +60,7 @@ class Request(Model):
         calculator = 'calculator'
         manager_support = 'manager_support'
 
-    id = fields.UUIDField(pk=True)
+    id = fields.CharField(max_length=8, pk=True)
     user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='requests_user')
     type = fields.CharEnumField(enum_type=RequestType, max_length=64, null=True)
 
@@ -72,7 +72,6 @@ class Request(Model):
     from_where = fields.CharField(max_length=64, null=True)
 
     manager_answer = fields.CharField(max_length=4096, null=True)
-    is_in_process = fields.BooleanField(default=False)
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True, related_name='requests_manager')
 
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -80,6 +79,7 @@ class Request(Model):
     @classmethod
     async def create_request(
             cls,
+            id: str,
             user_id: int,
             type: "Request.RequestType",
             calculator_data: str | None = None,
@@ -87,7 +87,7 @@ class Request(Model):
             support_data: str | None = None,
     ):
         request = await Request.create(
-            id=uuid.uuid4(),
+            id=id,
             user_id=user_id,
             type=type,
             calculator_data=calculator_data,
@@ -95,6 +95,16 @@ class Request(Model):
             support_data=support_data,
         )
         return request
+
+
+class RequestLog(Model):
+    class Meta:
+        table = 'request_logs'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True)
+    request = fields.ForeignKeyField('models.Request', to_field='id')
+    manager = fields.ForeignKeyField('models.User', to_field='user_id')
 
 
 class FAQ(Model):

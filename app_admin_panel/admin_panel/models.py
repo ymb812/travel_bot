@@ -55,7 +55,7 @@ class Dispatcher(models.Model):
 class Request(models.Model):
     class Meta:
         db_table = 'requests'
-        ordering = ['id']
+        ordering = ['-created_at']
         verbose_name = 'Заявки для менеджеров'
         verbose_name_plural = verbose_name
 
@@ -63,7 +63,7 @@ class Request(models.Model):
         calculator = 'calculator', 'calculator'
         manager_help = 'manager_support', 'manager_support'
 
-    id = models.UUIDField(primary_key=True)
+    id = models.CharField(max_length=8, primary_key=True)
     user = models.ForeignKey('User', to_field='user_id', related_name='requests_user', on_delete=models.CASCADE)
     type = models.CharField(choices=RequestType, max_length=64, null=True)
 
@@ -75,7 +75,6 @@ class Request(models.Model):
     from_where = models.CharField(max_length=64, blank=True, null=True)
 
     manager_answer = models.CharField(max_length=4096, blank=True, null=True)
-    is_in_process = models.BooleanField(default=False)
     manager = models.ForeignKey('User', to_field='user_id', related_name='requests_manager', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
