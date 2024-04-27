@@ -50,16 +50,12 @@ msgstr "Получить Excel статистику"
 
 
 # buttons
-msgid "REPORT_BUTTON"
-msgstr "Осмотр"
-
-
-msgid "EXHIBIT_BUTTON"
-msgstr "Экспонат"
-
-
 msgid "SUPPORT_BUTTON"
 msgstr "Поддержка"
+
+
+msgid "ADD_COMMENT_BUTTON"
+msgstr "Добавить комментарий"
 
 
 msgid "BACK_BUTTON"
@@ -122,5 +118,27 @@ msgstr "ℹ️ Рассылка завершена\n\n"
 "Всего пользователей: {users_amount}"
 
 
-msgid "CALCULATOR_REQUEST_INFO"
+msgid "REQUEST_INFO"
 msgstr "Заявка <code>{request_id}</code> успешно отправлена в обработку - ожидайте ответа"
+
+
+msgid "HANDLE_REQUEST"
+msgstr "Введите ответ на заявку <code>{request_id}</code>"
+
+
+msgid "HANDLE_REQUEST_DONE"
+msgstr "Ответ на заявку <code>{request_id}</code> сохранен и отправлен пользователю"
+
+
+msgid "REQUEST_ANSWER"
+msgstr "Ответ по заявке <code>{request_id}</code>"
+
+
+msgid "REQUEST_TEXT"
+msgstr "Заявка: <code>{request_id}</code>\n"
+"Тип заявки: {type}\n"
+"Пользователь: {username}\n"
+"{fio}\n"
+
+"Введенные данные:\n"
+"{data}"

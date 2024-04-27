@@ -28,9 +28,11 @@ class User(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        display = self.username
+        display = self.fio
         if not display:
-            return f'{self.id}'
+            display = self.username
+            if not display:
+                return f'{self.id}'
         return display
 
 
@@ -53,26 +55,26 @@ class Dispatcher(models.Model):
 class Request(models.Model):
     class Meta:
         db_table = 'requests'
-        ordering = ['id']
+        ordering = ['-created_at']
         verbose_name = 'Заявки для менеджеров'
         verbose_name_plural = verbose_name
 
     class RequestType(models.TextChoices):
         calculator = 'calculator', 'calculator'
-        manager_help = 'manager_help', 'manager_help'
+        manager_help = 'manager_support', 'manager_support'
 
-    id = models.UUIDField(primary_key=True)
+    id = models.CharField(max_length=8, primary_key=True)
     user = models.ForeignKey('User', to_field='user_id', related_name='requests_user', on_delete=models.CASCADE)
     type = models.CharField(choices=RequestType, max_length=64, null=True)
 
     calculator_data = models.CharField(max_length=4096, blank=True, null=True)
     calculator_photo = models.CharField(max_length=256, blank=True, null=True)
 
+    support_data = models.CharField(max_length=4096, blank=True, null=True)
     has_worked = models.CharField(max_length=8, blank=True, null=True)
     from_where = models.CharField(max_length=64, blank=True, null=True)
 
     manager_answer = models.CharField(max_length=4096, blank=True, null=True)
-    is_in_process = models.BooleanField(default=False)
     manager = models.ForeignKey('User', to_field='user_id', related_name='requests_manager', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
