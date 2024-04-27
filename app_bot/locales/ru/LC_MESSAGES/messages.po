@@ -122,5 +122,5 @@ msgstr "ℹ️ Рассылка завершена\n\n"
 "Всего пользователей: {users_amount}"
 
 
-msgid "CALCULATOR_REQUEST_INFO"
+msgid "REQUEST_INFO"
 msgstr "Заявка <code>{request_id}</code> успешно отправлена в обработку - ожидайте ответа"

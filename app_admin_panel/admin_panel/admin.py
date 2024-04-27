@@ -18,7 +18,7 @@ class UserResource(ModelResource):
 class RequestResource(ModelResource):
     class Meta:
         model = Request
-        fields = ['id', 'user__username', 'type', 'calculator_data', 'manager__username', 'created_at']
+        fields = ['id', 'user__username', 'user__fio', 'type', 'support_data', 'calculator_data', 'manager__username', 'created_at']
 
 
 @admin.register(User)
@@ -32,8 +32,7 @@ class UserAdmin(CustomImportExport):
 @admin.register(Request)
 class RequestAdmin(CustomImportExport):
     resource_classes = [RequestResource]
-    list_display = [field.name for field in Request._meta.fields]
-    list_editable = [field.name for field in Request._meta.fields if field.name != 'id' and field.name != 'created_at']
+    list_display = ('id', 'user', 'calculator_data', 'support_data', 'manager', 'manager_answer', 'created_at')
     list_filter = ('user',)
 
 
