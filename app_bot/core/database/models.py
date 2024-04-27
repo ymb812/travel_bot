@@ -69,6 +69,7 @@ class Request(Model):
     has_worked = fields.CharField(max_length=8, null=True)
     from_where = fields.CharField(max_length=64, null=True)
 
+    manager_answer = fields.CharField(max_length=4096, null=True)
     is_in_process = fields.BooleanField(default=False)
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True, related_name='requests_manager')
     created_at = fields.DatetimeField(auto_now_add=True)
