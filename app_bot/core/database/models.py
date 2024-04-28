@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime
 from tortoise import fields
 from tortoise.models import Model
@@ -57,22 +58,53 @@ class Request(Model):
 
     class RequestType(Enum):
         calculator = 'calculator'
-        manager_help = 'manager_help'
+        manager_support = 'manager_support'
 
-    id = fields.UUIDField(pk=True)
+    id = fields.CharField(max_length=8, pk=True)
     user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='requests_user')
     type = fields.CharEnumField(enum_type=RequestType, max_length=64, null=True)
 
     calculator_data = fields.CharField(max_length=4096, null=True)
     calculator_photo = fields.CharField(max_length=256, null=True)
 
+    support_data = fields.CharField(max_length=4096, null=True)
     has_worked = fields.CharField(max_length=8, null=True)
     from_where = fields.CharField(max_length=64, null=True)
 
     manager_answer = fields.CharField(max_length=4096, null=True)
-    is_in_process = fields.BooleanField(default=False)
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True, related_name='requests_manager')
+
     created_at = fields.DatetimeField(auto_now_add=True)
+
+    @classmethod
+    async def create_request(
+            cls,
+            id: str,
+            user_id: int,
+            type: "Request.RequestType",
+            calculator_data: str | None = None,
+            calculator_photo: str | None = None,
+            support_data: str | None = None,
+    ):
+        request = await Request.create(
+            id=id,
+            user_id=user_id,
+            type=type,
+            calculator_data=calculator_data,
+            calculator_photo=calculator_photo,
+            support_data=support_data,
+        )
+        return request
+
+
+class RequestLog(Model):
+    class Meta:
+        table = 'request_logs'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True)
+    request = fields.ForeignKeyField('models.Request', to_field='id')
+    manager = fields.ForeignKeyField('models.User', to_field='user_id')
 
 
 class FAQ(Model):

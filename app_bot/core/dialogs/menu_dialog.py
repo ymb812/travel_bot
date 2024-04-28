@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start, Select
 from core.states.main_menu import MainMenuStateGroup
 from core.states.calculator import CalculatorStateGroup
-from core.states.manager import ManagerStateGroup
+from core.states.manager_support import ManagerSupportStateGroup
 from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager
 from core.dialogs.callbacks import MainMenuCallbackHandler
@@ -26,7 +26,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
-            Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerStateGroup.input_fio),
+            Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
         ),
         state=MainMenuStateGroup.menu,
     ),
@@ -116,7 +116,7 @@ main_menu_dialog = Dialog(
             func=MainMenuCallbackHandler.entered_calculator_data,
             content_types=[ContentType.TEXT, ContentType.PHOTO]
         ),
-        Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerStateGroup.input_fio),
+        Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_calculator
     ),
