@@ -127,3 +127,15 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+
+
+class NotificationsSettings(models.Model):
+    class Meta:
+        db_table = 'notification_settings'
+        ordering = ['id']
+        verbose_name = 'Настройка уведомлений'
+        verbose_name_plural = verbose_name
+
+    id = models.AutoField(primary_key=True)
+    text = models.TextField(verbose_name='Текст')
+    is_turn = models.BooleanField(default=False, verbose_name='Рассылка включена?')

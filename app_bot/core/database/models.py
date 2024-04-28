@@ -162,3 +162,12 @@ class Post(Model):
     video_note_id = fields.CharField(max_length=256, null=True)
     document_file_id = fields.CharField(max_length=256, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
+
+
+class NotificationsSettings(Model):
+    class Meta:
+        table = 'notification_settings'
+
+    id = fields.BigIntField(pk=True)
+    text = fields.TextField()
+    is_turn = fields.BooleanField(default=True)
