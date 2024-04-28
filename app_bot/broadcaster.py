@@ -1,12 +1,11 @@
 import asyncio
 import logging
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
+import pytz
 from datetime import datetime
 from aiogram import Bot, types
 from aiogram.utils.i18n import I18n
 from core.database import init
-from core.database.models import User, Dispatcher, Post
+from core.database.models import User, Dispatcher, Post, NotificationsSettings
 from settings import settings
 
 
@@ -92,8 +91,11 @@ class Broadcaster(object):
             logger.error(f'Get post error', exc_info=e)
             return
 
-        # sending
-        await cls.send_content_to_users(bot=bot, broadcaster_post=post)
+        # sending - check is it notification => send to the channel
+        if order.is_notification:
+            await bot.send_message(chat_id=settings.required_channel_id, text=post.text)
+        else:
+            await cls.send_content_to_users(bot=bot, broadcaster_post=post)
 
         # delete order
         try:
@@ -116,9 +118,67 @@ class Broadcaster(object):
 
 
     @classmethod
+    async def check_and_send_notifications(cls):
+        notification = await NotificationsSettings.first()
+        if not notification:
+            return
+
+        # create or update notification post
+        await Post.update_or_create(
+            id=settings.notification_post_id,
+            defaults={'designation': 'Уведомление', 'text': notification.text},
+        )
+
+        # delete all active orders for notifications if is_turn=False
+        if not notification.is_turn:
+            await Dispatcher.filter(is_notification=True).delete()
+            return
+
+        # check are there already any orders for notifications, exit if there are any
+        orders_for_notifications = await Dispatcher.filter(is_notification=True)
+        if orders_for_notifications:
+            return
+        else:
+            # create 3 orders to send msg to the channel
+            tz = pytz.timezone('Europe/Moscow')
+            current_date = datetime.now(tz)
+            dates = []
+            for i in range(1, 4):
+                match i:
+                    case 1:
+                        hour = settings.notification_hours_1
+                    case 2:
+                        hour = settings.notification_hours_2
+                    case 3:
+                        hour = settings.notification_hours_3
+
+                dates.append(tz.localize(datetime(
+                    year=current_date.year,
+                    month=current_date.month,
+                    day=current_date.day,
+                    hour=hour,
+                    minute=0))
+                )
+
+            # create order only for future dates
+            for date in dates:
+                if current_date < date:
+                    await Dispatcher.create(
+                        post_id=settings.notification_post_id,
+                        is_notification=True,
+                        send_at=date,
+                    )
+
+
+    @classmethod
     async def start_event_loop(cls):
         logger.info('Broadcaster started')
         while True:
+            try:
+                await cls.check_and_send_notifications()
+            except Exception as e:
+                logger.error(f'check_and_send_notifications error', exc_info=e)
+
             try:
                 active_orders = await Dispatcher.filter(send_at__lte=datetime.now()).all()
                 logger.info(f'active_orders: {active_orders}')
@@ -164,18 +224,5 @@ async def main():
     await Broadcaster.start_event_loop()
 
 
-async def run_scheduler():
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(Broadcaster.send_notification,
-                      trigger=CronTrigger(hour=settings.notification_hours, minute=settings.notification_minutes))
-    scheduler.start()
-
-
-async def run_tasks():
-    broadcaster = asyncio.create_task(main())
-    scheduler = asyncio.create_task(run_scheduler())
-    await asyncio.gather(broadcaster, scheduler)
-
-
 if __name__ == '__main__':
-    asyncio.run(run_tasks())
+    asyncio.run(main())

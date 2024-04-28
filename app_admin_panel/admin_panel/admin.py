@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from import_export.resources import ModelResource
-from admin_panel.models import User, Request, FAQ, Dispatcher, Post, UserLog
+from admin_panel.models import User, Request, FAQ, Dispatcher, Post, UserLog, NotificationsSettings
 
 
 class CustomImportExport(ImportExportModelAdmin, ExportActionModelAdmin):
@@ -63,6 +63,12 @@ class DispatcherAdmin(CustomImportExport):
 class PostAdmin(CustomImportExport):
     list_display = [field.name for field in Post._meta.fields]
     list_editable = [field.name for field in Post._meta.fields if field.name != 'id' and field.name != 'created_at']
+
+
+@admin.register(NotificationsSettings)
+class NotificationsSettingsAdmin(CustomImportExport):
+    list_display = [field.name for field in NotificationsSettings._meta.fields]
+    list_editable = [field.name for field in NotificationsSettings._meta.fields if field.name != 'id']
 
 
 # sort models from admin.py by their registering (not alphabetically)

@@ -28,7 +28,7 @@ async def start_handler(
         pass
 
     # add basic info to db
-    user  = await User.update_data(
+    user = await User.update_data(
         user_id=message.from_user.id,
         username=message.from_user.username,
     )
