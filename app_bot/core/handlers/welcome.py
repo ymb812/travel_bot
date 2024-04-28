@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram_dialog import DialogManager, StartMode
 from core.states.main_menu import MainMenuStateGroup
-from core.utils.texts import set_user_commands, _
+from core.utils.texts import set_user_commands, set_admin_commands, _
 from core.database.models import User, Post
 from settings import settings
 
@@ -28,12 +28,16 @@ async def start_handler(
         pass
 
     # add basic info to db
-    await User.update_data(
+    user  = await User.update_data(
         user_id=message.from_user.id,
         username=message.from_user.username,
     )
 
-    await set_user_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
+    if user.status == 'admin':
+        await set_admin_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
+    else:
+        await set_user_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
+
     welcome_post = await Post.get(id=settings.welcome_post_id)
     await message.answer_video(
         caption=welcome_post.text,

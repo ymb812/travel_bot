@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from import_export.resources import ModelResource
-from admin_panel.models import User, Request, FAQ, Dispatcher, Post
+from admin_panel.models import User, Request, FAQ, Dispatcher, Post, UserLog
 
 
 class CustomImportExport(ImportExportModelAdmin, ExportActionModelAdmin):
@@ -13,6 +13,12 @@ class UserResource(ModelResource):
     class Meta:
         model = User
         import_id_fields = ('id',)
+
+
+class UserLogResource(ModelResource):
+    class Meta:
+        model = UserLog
+        fields = ['id', 'user__username', 'state', 'created_at']
 
 
 class RequestResource(ModelResource):
@@ -27,6 +33,12 @@ class UserAdmin(CustomImportExport):
     list_display = ('id', 'user_id', 'fio', 'username', 'status', 'created_at')
     list_display_links = ('id', 'user_id')
     list_editable = ('fio', 'username', 'status')
+
+
+@admin.register(UserLog)
+class UserLogAdmin(CustomImportExport):
+    resource_classes = [UserLogResource]
+    list_display = [field.name for field in UserLog._meta.fields]
 
 
 @admin.register(Request)
