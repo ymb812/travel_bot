@@ -27,6 +27,10 @@ async def set_admin_commands(bot: Bot, scope: BotCommandScopeChat):
             description=_('START_COMMAND')
         ),
         BotCommand(
+            command='users_info',
+            description=_('Информация о пользователях')
+        ),
+        BotCommand(
             command='stats',
             description=_('STATS_COMMAND')
         ),

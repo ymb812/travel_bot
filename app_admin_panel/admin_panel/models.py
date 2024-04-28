@@ -36,6 +36,20 @@ class User(models.Model):
         return display
 
 
+class UserLog(models.Model):
+    class Meta:
+        db_table = 'users_logs'
+        ordering = ['created_at']
+        verbose_name = 'Логи  пользователей'
+        verbose_name_plural = verbose_name
+
+
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', to_field='user_id', on_delete=models.CASCADE)
+    state = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Dispatcher(models.Model):
     class Meta:
         db_table = 'mailings'
@@ -88,7 +102,7 @@ class FAQ(models.Model):
 
     id = models.AutoField(primary_key=True)
     question = models.TextField(max_length=512)
-    video_file_id = models.CharField(max_length=256, blank=True, null=True)
+    video_file_id = models.CharField(max_length=256)
     order_priority = models.IntegerField(unique=True)
 
     def __str__(self):

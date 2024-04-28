@@ -1,11 +1,16 @@
 from aiogram.enums import ContentType
-from core.database.models import User, FAQ, Post
+from core.database.models import User, UserLog, FAQ, Post
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 from settings import settings
 
 
 async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
+    # add info about User's state
+    state = dialog_manager.event.data.split('')[-1]
+
+    await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+
     post_id = None
     if 'info' in dialog_manager.event.data:
         post_id = settings.info_post_id
