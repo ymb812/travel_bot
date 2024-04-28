@@ -1,37 +1,21 @@
 import io
 import datetime
+from core.database.models import Request
 from openpyxl import Workbook
-from openpyxl.worksheet.worksheet import Worksheet
 from tortoise.fields.relational import BackwardFKRelation
-from openpyxl.utils import get_column_letter
+from tortoise.queryset import QuerySet
+import pandas as pd
 
 
 async def create_excel(model):
-    entries = await model.all()
-
     file_in_memory = io.BytesIO()
-    book = Workbook()
-    sheet = book.active
+    data = await model.all().values_list('id', 'type', 'calculator_data', 'support_data', 'created_at',
+                                         'user__username', 'user__fio', 'manager__username', 'manager_answer')
 
-    # get model headers
-    headers = []
-    for field in model._meta.fields_map.values():
-        if type(field) != BackwardFKRelation:
-            headers.append(field.model_field_name)
-    sheet.append(headers)
+    df = pd.DataFrame(list(data), columns=['id', 'type', 'calculator_data', 'support_data', 'created_at',
+                                           'user__username', 'user__fio', 'manager__username', 'manager_answer'])
+    df['created_at'] = df['created_at'].apply(lambda x: x.replace(tzinfo=None) if x is not None else None)
+    df.to_excel(file_in_memory, index=False)
 
-    # add users data
-    for entry in entries:
-        row = []
-        for field_name in headers:
-            cell = getattr(entry, field_name)
-            if type(cell) == datetime.datetime:
-                cell: datetime.datetime = cell.replace(tzinfo=None)
-            row.append(cell)
-
-        sheet.append(row)
-
-    book.save(file_in_memory)
     file_in_memory.seek(0)
-
     return file_in_memory

@@ -62,7 +62,7 @@ class Request(Model):
 
     id = fields.CharField(max_length=8, pk=True)
     user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='requests_user')
-    type = fields.CharEnumField(enum_type=RequestType, max_length=64, null=True)
+    type = fields.CharField(choices=[(tag.value, tag.name) for tag in RequestType], max_length=64, null=True)
 
     calculator_data = fields.CharField(max_length=4096, null=True)
     calculator_photo = fields.CharField(max_length=256, null=True)
@@ -89,7 +89,7 @@ class Request(Model):
         request = await Request.create(
             id=id,
             user_id=user_id,
-            type=type,
+            type=type.value,
             calculator_data=calculator_data,
             calculator_photo=calculator_photo,
             support_data=support_data,

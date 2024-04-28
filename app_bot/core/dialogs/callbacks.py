@@ -50,13 +50,17 @@ async def send_new_request(request: Request, bot: Bot):
 
     # send request (calculator/support)
     user: User = await request.user
-    if request.type == request.RequestType.calculator:
+    if request.type == request.RequestType.calculator.value:
         type = 'калькулятор доставки'
         data = request.calculator_data
 
-    elif request.type == request.RequestType.manager_support:
+    elif request.type == request.RequestType.manager_support.value:
         type = 'связь с менеджером'
         data = request.support_data
+
+    fio = ''
+    if user.fio:
+        fio = f'ФИО: {user.fio}\n'
 
     if request.calculator_photo:
         await bot.send_photo(
@@ -67,7 +71,7 @@ async def send_new_request(request: Request, bot: Bot):
                 request_id=request.id,
                 type=type,
                 username=get_username_or_link(user=await request.user),
-                fio=None,
+                fio=fio,
                 data=data,
                     ),
             reply_markup=add_comment_kb(request_id=request.id),
@@ -81,7 +85,7 @@ async def send_new_request(request: Request, bot: Bot):
                 request_id=request.id,
                 type=type,
                 username=get_username_or_link(user),
-                fio=f'ФИО: {user.fio}\n',
+                fio=fio,
                 data=data,
                     ),
             reply_markup=add_comment_kb(request_id=request.id),
