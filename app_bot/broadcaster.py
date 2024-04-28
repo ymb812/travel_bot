@@ -92,7 +92,7 @@ class Broadcaster(object):
             return
 
         # sending - check is it notification => send to the channel
-        if order.is_notification:
+        if order.is_notification and post.id == settings.notification_post_id:
             await bot.send_message(chat_id=settings.required_channel_id, text=post.text)
         else:
             await cls.send_content_to_users(bot=bot, broadcaster_post=post)
