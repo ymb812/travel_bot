@@ -109,7 +109,7 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.faq
     ),
 
-    # calculator_data input
+    # calculator_data input_photo
     Window(
         Const(text=_('INPUT_CALCULATOR_DATA')),
         MessageInput(
@@ -129,7 +129,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Start(Const(text=_('BACK_BUTTON')), id='switch_to_photo', state=MainMenuStateGroup.input_photo),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_photo', state=MainMenuStateGroup.input_photo),
         state=MainMenuStateGroup.input_volume,
     ),
 
@@ -141,7 +141,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Start(Const(text=_('BACK_BUTTON')), id='switch_to_volume', state=MainMenuStateGroup.input_volume),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_volume', state=MainMenuStateGroup.input_volume),
         state=MainMenuStateGroup.input_width,
     ),
 
@@ -153,7 +153,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Start(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
         state=MainMenuStateGroup.input_density,
     ),
 
@@ -165,7 +165,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Start(Const(text=_('BACK_BUTTON')), id='switch_to_density', state=MainMenuStateGroup.input_density),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_density', state=MainMenuStateGroup.input_density),
         state=MainMenuStateGroup.input_weight,
     ),
 )
