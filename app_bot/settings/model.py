@@ -37,6 +37,9 @@ class Broadcaster(BaseModel):
     broadcaster_sleep: int = fields.Field(alias='BROADCASTER_SLEEP', default=1)
     notification_hours: int = fields.Field(alias='NOTIFICATION_HOURS', default=10)
     notification_minutes: int = fields.Field(alias='NOTIFICATION_MINUTES', default=0)
+    notification_hours_1: int = fields.Field(alias='NOTIFICATION_HOURS_1', default=9)
+    notification_hours_3: int = fields.Field(alias='NOTIFICATION_HOURS_2', default=15)
+    notification_hours_2: int = fields.Field(alias='NOTIFICATION_HOURS_3', default=21)
 
 
 class AppSettings(BaseModel):

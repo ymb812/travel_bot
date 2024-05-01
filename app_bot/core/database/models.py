@@ -27,7 +27,7 @@ class User(Model):
     async def update_data(cls, user_id: int, username: str):
         user = await cls.filter(user_id=user_id).first()
         if user is None:
-            await cls.create(
+            user = await cls.create(
                 user_id=user_id,
                 username=username,
             )
@@ -36,6 +36,8 @@ class User(Model):
                 username=username,
                 updated_at=datetime.now(),
             )
+
+        return user
 
     @classmethod
     async def update_admin_data(cls, user_id: int, username: str, status: str):
@@ -49,6 +51,26 @@ class User(Model):
         else:
             user.status = status
             await user.save()
+
+
+class UserLog(Model):
+    class Meta:
+        table = 'users_logs'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True)
+    user = fields.ForeignKeyField('models.User', to_field='user_id')
+    state = fields.CharField(max_length=128)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    @classmethod
+    async def create_log(
+            cls,
+            user_id: int,
+            state: str,
+    ):
+        log = await cls.create(user_id=user_id, state=state)
+        return log
 
 
 class Request(Model):
@@ -140,3 +162,12 @@ class Post(Model):
     video_note_id = fields.CharField(max_length=256, null=True)
     document_file_id = fields.CharField(max_length=256, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
+
+
+class NotificationsSettings(Model):
+    class Meta:
+        table = 'notification_settings'
+
+    id = fields.BigIntField(pk=True)
+    text = fields.TextField()
+    is_turn = fields.BooleanField(default=True)

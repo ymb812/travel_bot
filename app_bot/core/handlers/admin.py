@@ -4,7 +4,7 @@ from aiogram import types, Router, F, Bot
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from broadcaster import Broadcaster
-from core.database.models import User, Request
+from core.database.models import User, Request, UserLog
 from core.keyboards.inline import mailing_kb
 from core.states.mailing import MailingStateGroup
 from core.utils.texts import _, set_admin_commands
@@ -24,6 +24,16 @@ async def admin_login(message: types.Message, state: FSMContext, command: Comman
         await message.answer(text=_('NEW_ADMIN_TEXT'))
         await User.update_admin_data(user_id=message.from_user.id, username=message.from_user.username, status='admin')
         await set_admin_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
+
+
+@router.message(Command(commands=['users_info']))
+async def manager_excel_stats(message: types.Message):
+    user = await User.get(user_id=message.from_user.id)
+    if user.status not in ['admin', 'manager']:
+        return
+
+    file_in_memory = await create_excel(model=UserLog)
+    await message.answer_document(document=types.BufferedInputFile(file_in_memory.read(), filename='Users.xlsx'))
 
 
 @router.message(Command(commands=['stats']))
