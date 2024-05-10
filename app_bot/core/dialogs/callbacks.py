@@ -1,6 +1,7 @@
 import logging
 import string
 import random
+from tortoise.expressions import Q
 from aiogram import Bot
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager
@@ -11,9 +12,6 @@ from core.states.manager_support import ManagerSupportStateGroup
 from core.database.models import User, Request, RequestLog
 from core.keyboards.inline import add_comment_kb
 from core.utils.texts import _
-from broadcaster import Broadcaster
-from settings import settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,10 +30,18 @@ def get_username_or_link(user: User):
     return user_username
 
 
-async def send_new_request(request: Request, bot: Bot):
+async def add_manager_to_user(user_id: int, request_id: int = None) -> User | None:
+    # check if the user already has a manager
+    user = await User.get(user_id=user_id)
+    if user.manager_id:
+        logger.info(f'User {user_id} already has the manager {user.manager_id}')
+        return await user.manager
+
+    # get all logs with request_id != None, order by ID
     managers = await User.filter(status='manager').all().order_by('id')
-    logs = await RequestLog.all().order_by('id')
+    logs = await RequestLog.filter(~Q(request_id=None)).all().order_by('id')
     if not managers:
+        logger.error('There are no managers in the bot!')
         return
 
     manager_to_send: User = managers[0]
@@ -48,8 +54,22 @@ async def send_new_request(request: Request, bot: Bot):
         except ValueError:
             logger.error(f'There is no manager manager_id={manager_to_send.user_id}')
 
-    # send request (calculator/support)
+    # add manager to user
+    user.manager = manager_to_send
+    await user.save()
+
+    return manager_to_send
+
+
+async def send_new_request(request: Request, bot: Bot):
     user: User = await request.user
+
+    # pick manager for user
+    manager_to_send = await add_manager_to_user(user_id=user.user_id, request_id=request.id)
+    if not manager_to_send:
+        return
+
+    # send request (calculator/support)
     if request.type == request.RequestType.calculator.value:
         type = 'калькулятор доставки'
         data = request.calculator_data
@@ -92,7 +112,8 @@ async def send_new_request(request: Request, bot: Bot):
         )
 
     # add log and add manager to request
-    await RequestLog.create(request_id=request.id, manager_id=manager_to_send.user_id)
+    await RequestLog.create_log(manager_id=manager_to_send.user_id, user_id=user.user_id, request_id=request.id)
+
     request.manager_id = manager_to_send.user_id
     await request.save()
 
@@ -162,6 +183,21 @@ class MainMenuCallbackHandler:
 
             await message.answer(text=_('REQUEST_INFO', request_id=request.id))
             await dialog_manager.switch_to(MainMenuStateGroup.menu)
+
+
+    # add manager_id and start dialog
+    @classmethod
+    async def start_manager_support(
+            cls,
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+    ):
+        # add manager and log for future working
+        manager_to_send = await add_manager_to_user(user_id=callback.from_user.id)
+        await RequestLog.create_log(manager_id=manager_to_send.user_id, user_id=callback.from_user.id)
+
+        await dialog_manager.start(state=ManagerSupportStateGroup.input_fio)
 
 
 class ManagerSupportCallbackHandler:

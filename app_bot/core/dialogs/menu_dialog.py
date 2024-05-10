@@ -26,7 +26,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_photo),
-            Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
+            Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
         ),
         state=MainMenuStateGroup.menu,
     ),
@@ -116,7 +116,7 @@ main_menu_dialog = Dialog(
             func=MainMenuCallbackHandler.entered_calculator_photo,
             content_types=[ContentType.PHOTO],
         ),
-        Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
+        Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.input_photo
     ),

@@ -24,6 +24,7 @@ class User(models.Model):
     user_id = models.BigIntegerField(unique=True, null=True, blank=True)
     username = models.CharField(max_length=32, db_index=True, blank=True, null=True)
     status = models.CharField(max_length=32, blank=True, null=True)
+    manager = models.ForeignKey('User', to_field='user_id', on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

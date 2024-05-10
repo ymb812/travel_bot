@@ -20,6 +20,7 @@ class User(Model):
     user_id = fields.BigIntField(null=True, unique=True)
     username = fields.CharField(max_length=32, null=True)
     status = fields.CharField(max_length=32, null=True)  # manager
+    manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -122,11 +123,16 @@ class Request(Model):
 class RequestLog(Model):
     class Meta:
         table = 'request_logs'
-        ordering = ['id']
+        ordering = ['-id']
 
     id = fields.BigIntField(pk=True)
-    request = fields.ForeignKeyField('models.Request', to_field='id')
-    manager = fields.ForeignKeyField('models.User', to_field='user_id')
+    manager = fields.ForeignKeyField('models.User', to_field='user_id', related_name='managers_log')
+    user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='users_log')
+    request = fields.ForeignKeyField('models.Request', to_field='id', null=True)  # null cuz we pin manager w/o request
+
+    @classmethod
+    async def create_log(cls, manager_id: int, user_id: int, request_id: int = None):
+        await cls.create(manager_id=manager_id, user_id=user_id, request_id=request_id)
 
 
 class FAQ(Model):
