@@ -112,7 +112,7 @@ class MainMenuCallbackHandler:
 
     # create new calculator request
     @staticmethod
-    async def entered_calculator_data(
+    async def entered_calculator_photo(
             message: Message,
             widget: MessageInput,
             dialog_manager: DialogManager,
@@ -123,29 +123,45 @@ class MainMenuCallbackHandler:
             calculator_data = message.caption
             calculator_photo = message.photo[-1].file_id
 
-        request = await Request.create_request(
-            id=generate_random_string(),
-            user_id=message.from_user.id,
-            type=Request.RequestType.calculator,
-            calculator_data=calculator_data,
-            calculator_photo=calculator_photo,
-        )
-
-        # send request to manager
-        await send_new_request(request=request, bot=dialog_manager.event.bot)
-
-        await message.answer(text=_('REQUEST_INFO', request_id=request.id))
-        await dialog_manager.switch_to(MainMenuStateGroup.menu)
+        dialog_manager.dialog_data['calculator_photo'] = calculator_photo
+        await dialog_manager.switch_to(MainMenuStateGroup.input_volume)
 
 
-    @classmethod
-    async def main_menu_content(
-            cls,
-            callback: CallbackQuery,
-            widget: Button,
+    @staticmethod
+    async def entered_calculator_text_data(
+            message: Message,
+            widget: ManagedTextInput,
             dialog_manager: DialogManager,
+            value: str
     ):
-        pass
+        if widget.widget_id == 'input_volume':
+            dialog_manager.dialog_data['calculator_data'] = f'Объем: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_width)
+
+        elif widget.widget_id == 'input_width':
+            dialog_manager.dialog_data['calculator_data'] += f'Ширина: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_density)
+
+        elif widget.widget_id == 'input_density':
+            dialog_manager.dialog_data['calculator_data'] += f'Плотность: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_weight)
+
+        elif widget.widget_id == 'input_weight':
+            dialog_manager.dialog_data['calculator_data'] += f'Вес: {value}\n'
+
+            request = await Request.create_request(
+                id=generate_random_string(),
+                user_id=message.from_user.id,
+                type=Request.RequestType.calculator,
+                calculator_data=dialog_manager.dialog_data['calculator_data'],
+                calculator_photo=dialog_manager.dialog_data['calculator_photo'],
+            )
+
+            # send request to manager
+            await send_new_request(request=request, bot=dialog_manager.event.bot)
+
+            await message.answer(text=_('REQUEST_INFO', request_id=request.id))
+            await dialog_manager.switch_to(MainMenuStateGroup.menu)
 
 
 class ManagerSupportCallbackHandler:
