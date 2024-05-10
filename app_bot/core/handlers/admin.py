@@ -16,13 +16,13 @@ logger = logging.getLogger(__name__)
 router = Router(name='Admin commands router')
 
 
-# admin login
-@router.message(Command(commands=['admin']))
+# admin or manager login
+@router.message(Command(commands=['admin', 'manager']))
 async def admin_login(message: types.Message, state: FSMContext, command: CommandObject, bot: Bot):
     if command.args == settings.admin_password.get_secret_value():
         await state.clear()
-        await message.answer(text=_('NEW_ADMIN_TEXT'))
-        await User.update_admin_data(user_id=message.from_user.id, username=message.from_user.username, status='admin')
+        await message.answer(text=f'Вам выданы права {command.command}')
+        await User.update_admin_data(user_id=message.from_user.id, username=message.from_user.username, status=command.command)
         await set_admin_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
 
 
