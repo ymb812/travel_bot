@@ -129,6 +129,7 @@ class RequestLog(Model):
     manager = fields.ForeignKeyField('models.User', to_field='user_id', related_name='managers_log')
     user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='users_log')
     request = fields.ForeignKeyField('models.Request', to_field='id', null=True)  # null cuz we pin manager w/o request
+    created_at = fields.DatetimeField(auto_now_add=True)
 
     @classmethod
     async def create_log(cls, manager_id: int, user_id: int, request_id: int = None):
