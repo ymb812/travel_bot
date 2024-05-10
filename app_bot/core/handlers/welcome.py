@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram_dialog import DialogManager, StartMode
 from core.states.main_menu import MainMenuStateGroup
+from core.states.manager import ManagerStateGroup
 from core.utils.texts import set_user_commands, set_admin_commands, _
 from core.database.models import User, Post
 from settings import settings
@@ -44,5 +45,8 @@ async def start_handler(
         video=welcome_post.video_file_id,
     )
 
-    # send main menu
-    await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)
+    # send main menu or manager_menu state=ManagerStateGroup.manager_menu)
+    if user.status == User.StatusType.manager.value:
+        await dialog_manager.start(state=ManagerStateGroup.manager_menu, mode=StartMode.RESET_STACK)
+    else:
+        await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)

@@ -1,5 +1,5 @@
 import logging
-import uuid
+from enum import Enum
 from datetime import datetime
 from tortoise import fields
 from tortoise.models import Model
@@ -14,12 +14,20 @@ class User(Model):
         table = 'users'
         ordering = ['created_at']
 
+    class StatusType(Enum):
+        admin = 'admin'
+        manager = 'manager'
+        realize = 'Реализован'
+        unrealize = 'Не реализован'
+        work_with_request = 'В работе, связался'
+        work_no_request = 'В работе, не связался'
+
     id = fields.IntField(pk=True, index=True)
     fio = fields.CharField(max_length=64, null=True)
 
     user_id = fields.BigIntField(null=True, unique=True)
     username = fields.CharField(max_length=32, null=True)
-    status = fields.CharField(max_length=32, null=True)  # manager
+    status = fields.CharField(choices=[(tag.value, tag.name) for tag in StatusType], max_length=32, null=True)
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)

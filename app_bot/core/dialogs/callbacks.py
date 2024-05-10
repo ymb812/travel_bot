@@ -4,10 +4,12 @@ import random
 from aiogram import Bot
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.common import ManagedScroll
 from aiogram_dialog.widgets.input import ManagedTextInput, MessageInput
 from aiogram_dialog.widgets.kbd import Select, Button
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager_support import ManagerSupportStateGroup
+from core.states.manager import ManagerStateGroup
 from core.database.models import User, Request, RequestLog
 from core.keyboards.inline import add_comment_kb
 from core.user_manager.user_manager import add_manager_to_user
@@ -28,6 +30,18 @@ def get_username_or_link(user: User):
         user_username = f'<a href="tg://user?id={user.user_id}">ссылка</a>'
 
     return user_username
+
+
+async def switch_page(dialog_manager: DialogManager, scroll_id: str, message: Message):
+    # switch page
+    scroll: ManagedScroll = dialog_manager.find(scroll_id)
+    current_page = await scroll.get_page()
+
+    if current_page == dialog_manager.dialog_data['pages'] - 1:
+        next_page = 0
+    else:
+        next_page = current_page + 1
+    await scroll.set_page(next_page)
 
 
 async def send_new_request(request: Request, bot: Bot):
@@ -266,3 +280,48 @@ class ManagerSupportCallbackHandler:
 
         await callback.message.answer(text=_('REQUEST_INFO', request_id=request.id))
         await dialog_manager.start(MainMenuStateGroup.menu)
+
+
+class ManagerCallbackHandler:
+    @classmethod
+    async def selected_status(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        # check if there are any users here
+        users = await User.filter(
+            manager_id=dialog_manager.event.from_user.id,
+            status=item_id,
+        )
+
+        if not users:
+            await callback.message.answer(text='Пользователей с таким статусом нет')
+            return
+
+        dialog_manager.dialog_data['filter_by_status'] = item_id
+        await dialog_manager.switch_to(ManagerStateGroup.users_list)
+
+
+    @classmethod
+    async def change_user_status(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        # update status
+        status = dialog_manager.dialog_data['statuses_dict'][item_id]
+        await User.filter(user_id=dialog_manager.dialog_data['current_user_user_id']).update(
+            status=status,
+        )
+
+        # switch page
+        await switch_page(dialog_manager=dialog_manager, scroll_id='user_scroll', message=callback.message)
+
+        # last page - bypass IndexError
+        if dialog_manager.dialog_data['pages'] == 1:
+            await dialog_manager.switch_to(ManagerStateGroup.manager_menu)
