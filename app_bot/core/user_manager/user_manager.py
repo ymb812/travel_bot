@@ -31,8 +31,8 @@ async def add_manager_to_user(user_id: int, request_id: int = None, is_from_sche
                 manager_to_send = managers[managers.index(last_manager) + 1]
             except IndexError:
                 logger.info(f'Going to the 1st manager_id={manager_to_send.user_id}')
-            except ValueError:
-                logger.error(f'There is no manager manager_id={manager_to_send.user_id}')
+            except ValueError as e:
+                logger.error(f'There is no manager manager_id={manager_to_send.user_id}', exc_info=e)
 
         # add manager to user
         user.manager_id = manager_to_send.user_id

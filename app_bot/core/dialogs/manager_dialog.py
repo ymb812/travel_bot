@@ -2,8 +2,7 @@ from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, Column, StubScroll, Button, Row, \
-    FirstPage, LastPage, SwitchTo, Select
-from core.dialogs.custom_content import CustomPager
+    FirstPage, LastPage, Select
 from core.dialogs.getters import get_statuses, get_users_by_manager
 from core.dialogs.callbacks import ManagerCallbackHandler
 from core.states.manager import ManagerStateGroup
@@ -13,7 +12,7 @@ from core.utils.texts import _
 manager_dialog = Dialog(
     # manager_menu
     Window(
-        Format(text='Выберите статус'),
+        Format(text='Выберите статус, по которому отобразить список пользователей'),
         Column(
             Select(
                 id='_status_select',
@@ -50,7 +49,7 @@ manager_dialog = Dialog(
                 text=Format(text='{item.value}'),
                 on_click=ManagerCallbackHandler.change_user_status,
             ),
-            Start(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=ManagerStateGroup.manager_menu)
+            Start(Const(text=_('BACK_BUTTON')), id='go_to_manager_menu', state=ManagerStateGroup.manager_menu)
         ),
         getter=get_users_by_manager,
         state=ManagerStateGroup.users_list,

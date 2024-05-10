@@ -30,7 +30,7 @@ class User(models.Model):
     user_id = models.BigIntegerField(unique=True, null=True, blank=True)
     username = models.CharField(max_length=32, db_index=True, blank=True, null=True)
     status = models.CharField(choices=StatusType, max_length=32, null=True)
-    manager = models.ForeignKey('User', to_field='user_id', on_delete=models.CASCADE, null=True, blank=True)
+    manager = models.ForeignKey('User', to_field='user_id', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -39,7 +39,7 @@ class User(models.Model):
         if not display:
             display = self.username
             if not display:
-                return f'{self.id}'
+                return f'{self.user_id}'
         return display
 
 

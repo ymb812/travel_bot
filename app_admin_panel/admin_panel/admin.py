@@ -30,9 +30,9 @@ class RequestResource(ModelResource):
 @admin.register(User)
 class UserAdmin(CustomImportExport):
     resource_classes = [UserResource]
-    list_display = ('id', 'user_id', 'fio', 'username', 'status', 'created_at')
+    list_display = ('id', 'user_id', 'fio', 'username', 'status', 'manager', 'created_at')
     list_display_links = ('id', 'user_id')
-    list_editable = ('fio', 'username', 'status')
+    list_editable = ('fio', 'username', 'status', 'manager')
 
 
 @admin.register(UserLog)

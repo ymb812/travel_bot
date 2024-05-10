@@ -5,6 +5,8 @@ from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram_dialog import DialogManager, StartMode
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager import ManagerStateGroup
+from core.states.manager_support import ManagerSupportStateGroup
+from core.user_manager.user_manager import add_manager_to_user
 from core.utils.texts import set_user_commands, set_admin_commands, _
 from core.database.models import User, Post
 from settings import settings
@@ -49,5 +51,11 @@ async def start_handler(
             caption=welcome_post.text,
             video=welcome_post.video_file_id,
         )
+
+        # check deep link, add to manager, start manager support
+        if command.args == settings.deep_link_args:
+            await add_manager_to_user(user_id=message.from_user.id)
+            await dialog_manager.start(state=ManagerSupportStateGroup.input_fio, mode=StartMode.RESET_STACK)
+            return
 
         await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)
