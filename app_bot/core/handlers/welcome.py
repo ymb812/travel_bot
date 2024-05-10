@@ -39,14 +39,15 @@ async def start_handler(
     else:
         await set_user_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
 
-    welcome_post = await Post.get(id=settings.welcome_post_id)
-    await message.answer_video(
-        caption=welcome_post.text,
-        video=welcome_post.video_file_id,
-    )
-
-    # send main menu or manager_menu state=ManagerStateGroup.manager_menu)
+    # send manager_menu or main_menu
     if user.status == User.StatusType.manager.value:
         await dialog_manager.start(state=ManagerStateGroup.manager_menu, mode=StartMode.RESET_STACK)
+
     else:
+        welcome_post = await Post.get(id=settings.welcome_post_id)
+        await message.answer_video(
+            caption=welcome_post.text,
+            video=welcome_post.video_file_id,
+        )
+
         await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)

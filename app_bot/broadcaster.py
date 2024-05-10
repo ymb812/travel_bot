@@ -57,11 +57,22 @@ class Broadcaster(object):
 
 
     @classmethod
-    async def send_content_to_users(cls, bot: Bot, message: types.Message = None,
-                                    broadcaster_post: Post = None):
+    async def send_content_to_users(
+            cls,
+            bot: Bot,
+            status: str = None,
+            is_for_all_users: bool = None,
+            message: types.Message = None,
+            broadcaster_post: Post = None,
+    ):
         sent_amount = 0
 
-        users_ids = await User.all()
+        # send to all or by status
+        if is_for_all_users or not status:
+            users_ids = await User.all()
+        else:
+            users_ids = await User.filter(status=status)
+
         if not users_ids:
             return sent_amount
 
@@ -99,7 +110,9 @@ class Broadcaster(object):
         if order.is_notification and post.id == settings.notification_post_id:
             await bot.send_message(chat_id=settings.required_channel_id, text=post.text)
         else:
-            await cls.send_content_to_users(bot=bot, broadcaster_post=post)
+            await cls.send_content_to_users(
+                bot=bot, broadcaster_post=post, status=order.status, is_for_all_users=order.is_for_all_users
+            )
 
         # delete order
         try:

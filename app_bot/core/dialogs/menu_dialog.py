@@ -21,7 +21,7 @@ main_menu_dialog = Dialog(
         Column(
             SwitchTo(Const(text='О компании Чайна Тревел'), id='go_to_info', state=MainMenuStateGroup.pick_info),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
-            SwitchTo(Const(text='FAQ'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
+            SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),

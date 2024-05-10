@@ -27,7 +27,12 @@ class User(Model):
 
     user_id = fields.BigIntField(null=True, unique=True)
     username = fields.CharField(max_length=32, null=True)
-    status = fields.CharField(choices=[(tag.value, tag.name) for tag in StatusType], max_length=32, null=True)
+    status = fields.CharField(
+        choices=[(tag.value, tag.name) for tag in StatusType],
+        max_length=32,
+        null=True,
+        default=StatusType.unrealize.value,
+    )
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
@@ -162,6 +167,8 @@ class Dispatcher(Model):
     id = fields.BigIntField(pk=True)
     post = fields.ForeignKeyField('models.Post', to_field='id')
     is_notification = fields.BooleanField(default=False)
+    is_for_all_users = fields.BooleanField(default=False)
+    status = fields.CharField(max_length=32, null=True)  # mailings by user's status
     send_at = fields.DatetimeField()
 
 
