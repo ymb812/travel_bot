@@ -5,7 +5,7 @@ from tortoise.expressions import Q
 logger = logging.getLogger(__name__)
 
 
-async def add_manager_to_user(user_id: int, request_id: int = None, is_from_scheduler: bool = False) -> User | None:
+async def add_manager_to_user(user_id: int, request_id: int = None, without_request: bool = False) -> User | None:
     # check if the user already has a manager
     user = await User.get(user_id=user_id)
     if user.manager_id:
@@ -19,8 +19,8 @@ async def add_manager_to_user(user_id: int, request_id: int = None, is_from_sche
             return
         manager_to_send: User = managers[0]
 
-        # get logs with and w/o request if we have to pin all users w/o manager
-        if is_from_scheduler:
+        # get logs w/o request if we have only to pin w/o sending request
+        if without_request:
             logs = await RequestLog.all().order_by('id')
         else:
             logs = await RequestLog.filter(~Q(request_id=None)).all().order_by('id')
@@ -32,7 +32,7 @@ async def add_manager_to_user(user_id: int, request_id: int = None, is_from_sche
             except IndexError:
                 logger.info(f'Going to the 1st manager_id={manager_to_send.user_id}')
             except ValueError as e:
-                logger.error(f'There is no manager manager_id={manager_to_send.user_id}', exc_info=e)
+                logger.error(f'manager_id={manager_to_send.user_id} is NOT manager right now', exc_info=e)
 
         # add manager to user
         user.manager_id = manager_to_send.user_id

@@ -128,7 +128,7 @@ class Broadcaster(object):
     async def add_managers_to_users(cls):
         users_wo_manager = await User.filter((~Q(status='manager') | Q(status=None)) & Q(manager_id=None))
         for user in users_wo_manager:
-            manager = await add_manager_to_user(user_id=user.user_id, is_from_scheduler=True)
+            manager = await add_manager_to_user(user_id=user.user_id, without_request=True)
             logger.info(f'user_id={user.user_id} was added to manager_id={manager.user_id}')
 
 

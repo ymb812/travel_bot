@@ -177,7 +177,7 @@ class MainMenuCallbackHandler:
             dialog_manager: DialogManager,
     ):
         # add manager and log for future working
-        manager_to_send = await add_manager_to_user(user_id=callback.from_user.id)
+        manager_to_send = await add_manager_to_user(user_id=callback.from_user.id, without_request=True)
 
         await dialog_manager.start(state=ManagerSupportStateGroup.input_fio)
 
@@ -208,6 +208,8 @@ class ManagerSupportCallbackHandler:
 
         elif callback.data == 'sell_and_delivery':
             value = 'Все сразу'
+        else:
+            return
 
         dialog_manager.dialog_data['sell_and_delivery'] = f'Вас интересует выкуп или доставка товаров?\n' \
                                                           f'{value}\n\n'
