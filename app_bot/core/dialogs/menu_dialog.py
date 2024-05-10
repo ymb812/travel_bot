@@ -25,7 +25,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
-            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
+            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_photo),
             Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
         ),
         state=MainMenuStateGroup.menu,
@@ -109,15 +109,63 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.faq
     ),
 
-    # calculator_data input
+    # calculator_data input_photo
     Window(
         Const(text=_('INPUT_CALCULATOR_DATA')),
         MessageInput(
-            func=MainMenuCallbackHandler.entered_calculator_data,
-            content_types=[ContentType.TEXT, ContentType.PHOTO]
+            func=MainMenuCallbackHandler.entered_calculator_photo,
+            content_types=[ContentType.PHOTO],
         ),
         Start(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', state=ManagerSupportStateGroup.input_fio),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
-        state=MainMenuStateGroup.pick_calculator
+        state=MainMenuStateGroup.input_photo
+    ),
+
+    # input_volume
+    Window(
+        Const(text='Введите объем'),
+        TextInput(
+            id='input_volume',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_photo', state=MainMenuStateGroup.input_photo),
+        state=MainMenuStateGroup.input_volume,
+    ),
+
+    # input_width
+    Window(
+        Const(text='Введите ширину'),
+        TextInput(
+            id='input_width',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_volume', state=MainMenuStateGroup.input_volume),
+        state=MainMenuStateGroup.input_width,
+    ),
+
+    # input_density
+    Window(
+        Const(text='Введите плотность'),
+        TextInput(
+            id='input_density',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
+        state=MainMenuStateGroup.input_density,
+    ),
+
+    # input_weight
+    Window(
+        Const(text='Введите вес'),
+        TextInput(
+            id='input_weight',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_density', state=MainMenuStateGroup.input_density),
+        state=MainMenuStateGroup.input_weight,
     ),
 )
