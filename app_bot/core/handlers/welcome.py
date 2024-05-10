@@ -4,6 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram_dialog import DialogManager, StartMode
 from core.states.main_menu import MainMenuStateGroup
+from core.states.manager import ManagerStateGroup
+from core.states.manager_support import ManagerSupportStateGroup
+from core.user_manager.user_manager import add_manager_to_user
 from core.utils.texts import set_user_commands, set_admin_commands, _
 from core.database.models import User, Post
 from settings import settings
@@ -38,11 +41,21 @@ async def start_handler(
     else:
         await set_user_commands(bot=bot, scope=types.BotCommandScopeChat(chat_id=message.from_user.id))
 
-    welcome_post = await Post.get(id=settings.welcome_post_id)
-    await message.answer_video(
-        caption=welcome_post.text,
-        video=welcome_post.video_file_id,
-    )
+    # send manager_menu or main_menu
+    if user.status == User.StatusType.manager.value:
+        await dialog_manager.start(state=ManagerStateGroup.manager_menu, mode=StartMode.RESET_STACK)
 
-    # send main menu
-    await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)
+    else:
+        # check deep link, add to manager, start manager support
+        if command.args == settings.deep_link_args:
+            await add_manager_to_user(user_id=message.from_user.id, without_request=True)
+            await dialog_manager.start(state=ManagerSupportStateGroup.input_fio, mode=StartMode.RESET_STACK)
+            return
+
+        welcome_post = await Post.get(id=settings.welcome_post_id)
+        await message.answer_video(
+            caption=welcome_post.text,
+            video=welcome_post.video_file_id,
+        )
+
+        await dialog_manager.start(state=MainMenuStateGroup.menu, mode=StartMode.RESET_STACK)

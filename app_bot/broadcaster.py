@@ -1,11 +1,15 @@
 import asyncio
 import logging
 import pytz
+from tortoise.expressions import Q
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 from aiogram import Bot, types
 from aiogram.utils.i18n import I18n
 from core.database import init
 from core.database.models import User, Dispatcher, Post, NotificationsSettings
+from core.user_manager.user_manager import add_manager_to_user
 from settings import settings
 
 
@@ -53,11 +57,22 @@ class Broadcaster(object):
 
 
     @classmethod
-    async def send_content_to_users(cls, bot: Bot, message: types.Message = None,
-                                    broadcaster_post: Post = None):
+    async def send_content_to_users(
+            cls,
+            bot: Bot,
+            status: str = None,
+            is_for_all_users: bool = None,
+            message: types.Message = None,
+            broadcaster_post: Post = None,
+    ):
         sent_amount = 0
 
-        users_ids = await User.all()
+        # send to all or by status
+        if is_for_all_users or not status:
+            users_ids = await User.all()
+        else:
+            users_ids = await User.filter(status=status)
+
         if not users_ids:
             return sent_amount
 
@@ -95,7 +110,9 @@ class Broadcaster(object):
         if order.is_notification and post.id == settings.notification_post_id:
             await bot.send_message(chat_id=settings.required_channel_id, text=post.text)
         else:
-            await cls.send_content_to_users(bot=bot, broadcaster_post=post)
+            await cls.send_content_to_users(
+                bot=bot, broadcaster_post=post, status=order.status, is_for_all_users=order.is_for_all_users
+            )
 
         # delete order
         try:
@@ -108,13 +125,11 @@ class Broadcaster(object):
 
 
     @classmethod
-    async def send_notification(cls):
-        # send daily notification
-        try:
-            post = await Post.get_or_none(id=settings.notification_post_id)
-            await cls.send_content_to_users(bot=bot, broadcaster_post=post)
-        except Exception as e:
-            logger.error(f'Error while sending daily notification', exc_info=e)
+    async def add_managers_to_users(cls):
+        users_wo_manager = await User.filter((~Q(status='manager') | Q(status=None)) & Q(manager_id=None))
+        for user in users_wo_manager:
+            manager = await add_manager_to_user(user_id=user.user_id, without_request=True)
+            logger.info(f'user_id={user.user_id} was added to manager_id={manager.user_id}')
 
 
     @classmethod
@@ -224,5 +239,20 @@ async def main():
     await Broadcaster.start_event_loop()
 
 
+async def run_scheduler():
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        func=Broadcaster.add_managers_to_users,
+        trigger=CronTrigger(hour=settings.notification_hours, minute=settings.notification_minutes),
+    )
+    scheduler.start()
+
+
+async def run_tasks():
+    broadcaster = asyncio.create_task(main())
+    scheduler = asyncio.create_task(run_scheduler())
+    await asyncio.gather(broadcaster, scheduler)
+
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(run_tasks())

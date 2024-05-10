@@ -1,5 +1,5 @@
 import logging
-import uuid
+from enum import Enum
 from datetime import datetime
 from tortoise import fields
 from tortoise.models import Model
@@ -14,12 +14,26 @@ class User(Model):
         table = 'users'
         ordering = ['created_at']
 
+    class StatusType(Enum):
+        admin = 'admin'
+        manager = 'manager'
+        realize = 'Реализован'
+        unrealize = 'Не реализован'
+        work_with_request = 'В работе, связался'
+        work_no_request = 'В работе, не связался'
+
     id = fields.IntField(pk=True, index=True)
     fio = fields.CharField(max_length=64, null=True)
 
     user_id = fields.BigIntField(null=True, unique=True)
     username = fields.CharField(max_length=32, null=True)
-    status = fields.CharField(max_length=32, null=True)  # manager
+    status = fields.CharField(
+        choices=[(tag.value, tag.name) for tag in StatusType],
+        max_length=32,
+        null=True,
+        default=StatusType.unrealize.value,
+    )
+    manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -122,11 +136,17 @@ class Request(Model):
 class RequestLog(Model):
     class Meta:
         table = 'request_logs'
-        ordering = ['id']
+        ordering = ['-id']
 
     id = fields.BigIntField(pk=True)
-    request = fields.ForeignKeyField('models.Request', to_field='id')
-    manager = fields.ForeignKeyField('models.User', to_field='user_id')
+    manager = fields.ForeignKeyField('models.User', to_field='user_id', related_name='managers_log')
+    user = fields.ForeignKeyField('models.User', to_field='user_id', related_name='users_log')
+    request = fields.ForeignKeyField('models.Request', to_field='id', null=True)  # null cuz we pin manager w/o request
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    @classmethod
+    async def create_log(cls, manager_id: int, user_id: int, request_id: int = None):
+        await cls.create(manager_id=manager_id, user_id=user_id, request_id=request_id)
 
 
 class FAQ(Model):
@@ -147,6 +167,8 @@ class Dispatcher(Model):
     id = fields.BigIntField(pk=True)
     post = fields.ForeignKeyField('models.Post', to_field='id')
     is_notification = fields.BooleanField(default=False)
+    is_for_all_users = fields.BooleanField(default=False)
+    status = fields.CharField(max_length=32, null=True)  # mailings by user's status
     send_at = fields.DatetimeField()
 
 
