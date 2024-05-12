@@ -30,8 +30,7 @@ class User(Model):
     status = fields.CharField(
         choices=[(tag.value, tag.name) for tag in StatusType],
         max_length=32,
-        null=True,
-        default=StatusType.unrealize.value,
+        default=StatusType.work_no_request.value,
     )
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
