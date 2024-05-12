@@ -4,16 +4,16 @@ import random
 from aiogram import Bot
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.common import ManagedScroll
 from aiogram_dialog.widgets.input import ManagedTextInput, MessageInput
 from aiogram_dialog.widgets.kbd import Select, Button
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager_support import ManagerSupportStateGroup
+from core.states.manager import ManagerStateGroup
 from core.database.models import User, Request, RequestLog
 from core.keyboards.inline import add_comment_kb
+from core.user_manager.user_manager import add_manager_to_user
 from core.utils.texts import _
-from broadcaster import Broadcaster
-from settings import settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,24 +32,27 @@ def get_username_or_link(user: User):
     return user_username
 
 
+async def switch_page(dialog_manager: DialogManager, scroll_id: str, message: Message):
+    # switch page
+    scroll: ManagedScroll = dialog_manager.find(scroll_id)
+    current_page = await scroll.get_page()
+
+    if current_page == dialog_manager.dialog_data['pages'] - 1:
+        next_page = 0
+    else:
+        next_page = current_page + 1
+    await scroll.set_page(next_page)
+
+
 async def send_new_request(request: Request, bot: Bot):
-    managers = await User.filter(status='manager').all().order_by('id')
-    logs = await RequestLog.all().order_by('id')
-    if not managers:
+    user: User = await request.user
+
+    # pick manager for user
+    manager_to_send = await add_manager_to_user(user_id=user.user_id, request_id=request.id)
+    if not manager_to_send:
         return
 
-    manager_to_send: User = managers[0]
-    if logs:
-        last_manager: User = await logs[-1].manager
-        try:
-            manager_to_send = managers[managers.index(last_manager) + 1]
-        except IndexError:
-            logger.info(f'Going to the 1st manager_id={manager_to_send.user_id}')
-        except ValueError:
-            logger.error(f'There is no manager manager_id={manager_to_send.user_id}')
-
     # send request (calculator/support)
-    user: User = await request.user
     if request.type == request.RequestType.calculator.value:
         type = 'калькулятор доставки'
         data = request.calculator_data
@@ -91,8 +94,9 @@ async def send_new_request(request: Request, bot: Bot):
             reply_markup=add_comment_kb(request_id=request.id),
         )
 
-    # add log and add manager to request
-    await RequestLog.create(request_id=request.id, manager_id=manager_to_send.user_id)
+    # add log with request and add manager to request
+    await RequestLog.create_log(manager_id=manager_to_send.user_id, user_id=user.user_id, request_id=request.id)
+
     request.manager_id = manager_to_send.user_id
     await request.save()
 
@@ -164,6 +168,20 @@ class MainMenuCallbackHandler:
             await dialog_manager.switch_to(MainMenuStateGroup.menu)
 
 
+    # add manager_id and start dialog
+    @classmethod
+    async def start_manager_support(
+            cls,
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+    ):
+        # add manager and log for future working
+        manager_to_send = await add_manager_to_user(user_id=callback.from_user.id, without_request=True)
+
+        await dialog_manager.start(state=ManagerSupportStateGroup.input_fio)
+
+
 class ManagerSupportCallbackHandler:
     @staticmethod
     async def entered_fio(
@@ -190,6 +208,8 @@ class ManagerSupportCallbackHandler:
 
         elif callback.data == 'sell_and_delivery':
             value = 'Все сразу'
+        else:
+            return
 
         dialog_manager.dialog_data['sell_and_delivery'] = f'Вас интересует выкуп или доставка товаров?\n' \
                                                           f'{value}\n\n'
@@ -262,3 +282,48 @@ class ManagerSupportCallbackHandler:
 
         await callback.message.answer(text=_('REQUEST_INFO', request_id=request.id))
         await dialog_manager.start(MainMenuStateGroup.menu)
+
+
+class ManagerCallbackHandler:
+    @classmethod
+    async def selected_status(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        # check if there are any users here
+        users = await User.filter(
+            manager_id=dialog_manager.event.from_user.id,
+            status=item_id,
+        )
+
+        if not users:
+            await callback.message.answer(text='Пользователей с таким статусом нет')
+            return
+
+        dialog_manager.dialog_data['filter_by_status'] = item_id
+        await dialog_manager.switch_to(ManagerStateGroup.users_list)
+
+
+    @classmethod
+    async def change_user_status(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        # update status
+        status = dialog_manager.dialog_data['statuses_dict'][item_id]
+        await User.filter(user_id=dialog_manager.dialog_data['current_user_user_id']).update(
+            status=status,
+        )
+
+        # switch page
+        await switch_page(dialog_manager=dialog_manager, scroll_id='user_scroll', message=callback.message)
+
+        # last page - bypass IndexError
+        if dialog_manager.dialog_data['pages'] == 1:
+            await dialog_manager.switch_to(ManagerStateGroup.manager_menu)

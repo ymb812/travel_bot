@@ -7,6 +7,7 @@ class BotSettings(BaseModel):
     bot_link: str = fields.Field(max_length=100, alias='BOT_BASE_LINK')
     admin_password: SecretStr = fields.Field(max_length=100, alias='ADMIN_PASSWORD')
     required_channel_id: str = fields.Field(alias='REQUIRED_CHANNEL_ID')
+    deep_link_args: str = fields.Field(max_length=100, alias='DEEP_LINK_ARGS')
 
 
 class StaticContent(BaseModel):

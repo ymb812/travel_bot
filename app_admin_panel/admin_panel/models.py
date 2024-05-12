@@ -16,14 +16,21 @@ class User(models.Model):
         verbose_name = 'Пользователи'
         verbose_name_plural = verbose_name
 
+    class StatusType(models.TextChoices):
+        admin = 'admin', 'admin'
+        manager = 'manager', 'manager'
+        realize = 'Реализован', 'Реализован'
+        unrealize = 'Не реализован', 'Не реализован'
+        work_with_request = 'В работе, связался', 'В работе, связался'
+        work_no_request = 'В работе, не связался', 'В работе, не связался'
+
     id = models.AutoField(primary_key=True, db_index=True)
     fio = models.CharField(max_length=64, null=True, blank=True)
-    phone = models.CharField(max_length=64, null=True, blank=True)
-    address = models.CharField(max_length=64, unique=True, null=True, blank=True)
 
     user_id = models.BigIntegerField(unique=True, null=True, blank=True)
     username = models.CharField(max_length=32, db_index=True, blank=True, null=True)
-    status = models.CharField(max_length=32, blank=True, null=True)
+    status = models.CharField(choices=StatusType, max_length=32, default=StatusType.work_no_request)
+    manager = models.ForeignKey('User', to_field='user_id', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -32,7 +39,7 @@ class User(models.Model):
         if not display:
             display = self.username
             if not display:
-                return f'{self.id}'
+                return f'{self.user_id}'
         return display
 
 
@@ -48,22 +55,6 @@ class UserLog(models.Model):
     user = models.ForeignKey('User', to_field='user_id', on_delete=models.CASCADE)
     state = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
-
-
-class Dispatcher(models.Model):
-    class Meta:
-        db_table = 'mailings'
-        ordering = ['id']
-        verbose_name = 'Рассылки'
-        verbose_name_plural = verbose_name
-
-    id = models.BigAutoField(primary_key=True)
-    post = models.ForeignKey('Post', to_field='id', on_delete=models.CASCADE)
-    is_notification = models.BooleanField(default=False)
-    send_at = models.DateTimeField()
-
-    def __str__(self):
-        return f'{self.id}'
 
 
 class Request(models.Model):
@@ -104,6 +95,24 @@ class FAQ(models.Model):
     question = models.TextField(max_length=512)
     video_file_id = models.CharField(max_length=256)
     order_priority = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return f'{self.id}'
+
+
+class Dispatcher(models.Model):
+    class Meta:
+        db_table = 'mailings'
+        ordering = ['id']
+        verbose_name = 'Рассылки'
+        verbose_name_plural = verbose_name
+
+    id = models.BigAutoField(primary_key=True)
+    post = models.ForeignKey('Post', to_field='id', on_delete=models.CASCADE)
+    is_notification = models.BooleanField(default=False)
+    is_for_all_users = models.BooleanField(default=False)
+    status = models.CharField(choices=User.StatusType, max_length=32, null=True, blank=True)
+    send_at = models.DateTimeField()
 
     def __str__(self):
         return f'{self.id}'
