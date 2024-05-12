@@ -20,3 +20,5 @@ class MainMenuStateGroup(StatesGroup):
     input_width = State()
     input_density = State()
     input_weight = State()
+
+    managers_cards = State()

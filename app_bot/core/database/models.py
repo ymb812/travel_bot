@@ -147,6 +147,18 @@ class RequestLog(Model):
         await cls.create(manager_id=manager_id, user_id=user_id, request_id=request_id)
 
 
+class ManagerCard(Model):
+    class Meta:
+        table = 'managers_cards'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True, index=True)
+    name = fields.CharField(max_length=64)
+    description = fields.CharField(max_length=2048)
+    photo = fields.CharField(max_length=256, null=True)
+    order_priority = fields.IntField(default=1)
+
+
 class FAQ(Model):
     class Meta:
         table = 'faq'
