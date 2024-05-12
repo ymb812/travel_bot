@@ -34,7 +34,7 @@ class User(Model):
     )
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    last_activity = fields.DatetimeField(null=True)
 
     @classmethod
     async def update_data(cls, user_id: int, username: str):
@@ -47,7 +47,6 @@ class User(Model):
         else:
             await cls.filter(user_id=user_id).update(
                 username=username,
-                updated_at=datetime.now(),
             )
 
         return user

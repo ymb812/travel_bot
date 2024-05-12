@@ -31,13 +31,13 @@ class User(models.Model):
     username = models.CharField(max_length=32, db_index=True, blank=True, null=True)
     status = models.CharField(choices=StatusType, max_length=32, default=StatusType.work_no_request)
     manager = models.ForeignKey('User', to_field='user_id', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Первая активность')
+    last_activity = models.DateTimeField(null=True, verbose_name='Последняя активность')
 
     def __str__(self):
-        display = self.fio
+        display = self.username
         if not display:
-            display = self.username
+            display = self.fio
             if not display:
                 return f'{self.user_id}'
         return display

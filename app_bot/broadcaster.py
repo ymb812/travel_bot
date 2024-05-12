@@ -10,6 +10,7 @@ from aiogram.utils.i18n import I18n
 from core.database import init
 from core.database.models import User, Dispatcher, Post, NotificationsSettings
 from core.user_manager.user_manager import add_manager_to_user
+from core.excel.excel_generator import manager_daily_excel
 from settings import settings
 
 
@@ -125,7 +126,21 @@ class Broadcaster(object):
 
 
     @classmethod
-    async def add_managers_to_users(cls):
+    async def send_excel_and_add_managers_to_users(cls):
+        # send excel with user w/o manager
+        file_in_memory = (await manager_daily_excel()).read()
+        managers = await User.filter(status=User.StatusType.manager.value)
+        for manager in managers:
+            try:
+                await bot.send_document(
+                    chat_id=manager.user_id,
+                    document=types.BufferedInputFile(file_in_memory, filename='Users.xlsx'),
+                )
+                logger.error(f'File for managers was sent to {manager.user_id}')
+            except Exception as e:
+                logger.error(f'File for managers was NOT sent to {manager.user_id}', exc_info=e)
+
+        # add managers
         users_wo_manager = await User.filter((~Q(status='manager') | Q(status=None)) & Q(manager_id=None))
         for user in users_wo_manager:
             manager = await add_manager_to_user(user_id=user.user_id, without_request=True)
@@ -242,7 +257,7 @@ async def main():
 async def run_scheduler():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
-        func=Broadcaster.add_managers_to_users,
+        func=Broadcaster.send_excel_and_add_managers_to_users,
         trigger=CronTrigger(hour=settings.notification_hours, minute=settings.notification_minutes),
     )
     scheduler.start()
