@@ -84,6 +84,23 @@ class Request(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class ManagerCard(models.Model):
+    class Meta:
+        db_table = 'managers_cards'
+        ordering = ['id']
+        verbose_name = 'Карточки менеджеров'
+        verbose_name_plural = verbose_name
+
+    id = models.AutoField(primary_key=True, db_index=True)
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=2048)
+    photo = models.CharField(max_length=256, null=True, blank=True)
+    order_priority = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.name
+
+
 class FAQ(models.Model):
     class Meta:
         db_table = 'faq'

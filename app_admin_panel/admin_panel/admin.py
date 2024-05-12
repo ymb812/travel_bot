@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from import_export.resources import ModelResource
-from admin_panel.models import User, Request, FAQ, Dispatcher, Post, UserLog, NotificationsSettings
+from admin_panel.models import User, Request, FAQ, Dispatcher, Post, UserLog, NotificationsSettings, ManagerCard
 
 
 class CustomImportExport(ImportExportModelAdmin, ExportActionModelAdmin):
@@ -46,6 +46,12 @@ class RequestAdmin(CustomImportExport):
     resource_classes = [RequestResource]
     list_display = ('id', 'user', 'calculator_data', 'support_data', 'manager', 'manager_answer', 'created_at')
     list_filter = ('user',)
+
+
+@admin.register(ManagerCard)
+class ManagerCardAdmin(CustomImportExport):
+    list_display = [field.name for field in ManagerCard._meta.fields]
+    list_editable = [field.name for field in ManagerCard._meta.fields if field.name != 'id']
 
 
 @admin.register(FAQ)
