@@ -1,9 +1,4 @@
 import io
-import datetime
-from core.database.models import Request
-from openpyxl import Workbook
-from tortoise.fields.relational import BackwardFKRelation
-from tortoise.queryset import QuerySet
 import pandas as pd
 
 
@@ -11,7 +6,7 @@ async def create_excel(model):
     file_in_memory = io.BytesIO()
     try:
         data = await model.all().values_list('id', 'type', 'calculator_data', 'support_data', 'created_at',
-                                         'user__username', 'user__fio', 'manager__username', 'manager_answer')
+                                             'user__username', 'user__fio', 'manager__username', 'manager_answer')
 
         df = pd.DataFrame(list(data), columns=['id', 'type', 'calculator_data', 'support_data', 'created_at',
                                                'user__username', 'user__fio', 'manager__username', 'manager_answer'])
