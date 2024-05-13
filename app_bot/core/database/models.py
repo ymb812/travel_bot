@@ -1,5 +1,5 @@
 import logging
-from enum import Enum
+import pytz
 from datetime import datetime
 from tortoise import fields
 from tortoise.models import Model
@@ -34,15 +34,17 @@ class User(Model):
     )
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-    last_activity = fields.DatetimeField(null=True)
+    last_activity = fields.DatetimeField(auto_now=True)
 
     @classmethod
     async def update_data(cls, user_id: int, username: str):
         user = await cls.filter(user_id=user_id).first()
+        tz = pytz.timezone('Europe/Moscow')
         if user is None:
             user = await cls.create(
                 user_id=user_id,
                 username=username,
+                last_activity=tz.localize(datetime.now()),
             )
         else:
             await cls.filter(user_id=user_id).update(
