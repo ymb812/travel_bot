@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, Column, StubScroll, Button, Row, \
-    FirstPage, LastPage, Select, SwitchTo
+    FirstPage, LastPage, Select, SwitchTo, Url
 from core.states.main_menu import MainMenuStateGroup
 from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager
@@ -27,6 +27,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_photo),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
+            Url(Const(text='Оставьте свой отзыв'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
         state=MainMenuStateGroup.menu,
     ),
@@ -79,6 +80,7 @@ main_menu_dialog = Dialog(
         SwitchTo(Const(text='Доставка и ее стоимость'), id='delivery', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Шаблон договора'), id='contract', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_requirements

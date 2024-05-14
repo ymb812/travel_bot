@@ -19,6 +19,7 @@ class StaticContent(BaseModel):
     delivery_post_id: int = fields.Field(alias='delivery_post_id'.upper())
     requirements_post_id: int = fields.Field(alias='requirements_post_id'.upper())
     poizon_post_id: int = fields.Field(alias='poizon_post_id'.upper())
+    alipay_post_id: int = fields.Field(alias='alipay_post_id'.upper())
     contract_post_id: int = fields.Field(alias='contract_post_id'.upper())
     cases_post_id: int = fields.Field(alias='cases_post_id'.upper())
     reviews_post_id: int = fields.Field(alias='reviews_post_id'.upper())
