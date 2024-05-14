@@ -1,16 +1,16 @@
+from aiogram import F
 from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start, Select
+from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, Column, StubScroll, Button, Row, \
+    FirstPage, LastPage, Select, SwitchTo, Url
 from core.states.main_menu import MainMenuStateGroup
-from core.states.calculator import CalculatorStateGroup
-from core.states.manager_support import ManagerSupportStateGroup
 from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager
 from core.dialogs.callbacks import MainMenuCallbackHandler
-from core.dialogs.getters import get_main_menu_content, get_questions, get_question
+from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards
 from settings import settings
 
 
@@ -27,6 +27,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_photo),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
+            Url(Const(text='Оставьте свой отзыв'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
         state=MainMenuStateGroup.menu,
     ),
@@ -38,6 +39,7 @@ main_menu_dialog = Dialog(
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.info),
         SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.info),
         SwitchTo(Const(text='Реквизиты компании'), id='payment_data', state=MainMenuStateGroup.info),
+        Button(Const(text='Наши менеджеры'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_info
     ),
@@ -51,12 +53,34 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.info
     ),
 
+    # managers_cards
+    Window(
+        DynamicMedia(selector='media_content'),
+        Format(text='{msg_text}'),
+        StubScroll(id='manager_card_scroll', pages='pages'),
+
+        # cycle pager
+        Row(
+            LastPage(scroll='manager_card_scroll', text=Const('<'), when=F['current_page'] == 0),
+            PrevPage(scroll='manager_card_scroll', when=F['current_page'] != 0),
+            CurrentPage(scroll='manager_card_scroll'),
+            NextPage(scroll='manager_card_scroll', when=F['current_page'] != F['pages'] - 1),
+            FirstPage(scroll='manager_card_scroll', text=Const('>'), when=F['current_page'] == F['pages'] - 1),
+            when=F['pages'] > 1,
+        ),
+
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        getter=get_managers_cards,
+        state=MainMenuStateGroup.managers_cards,
+    ),
+
     # pick requirements
     Window(
         Const(text=_('PICK_ACTION')),
         SwitchTo(Const(text='Доставка и ее стоимость'), id='delivery', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Шаблон договора'), id='contract', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_requirements

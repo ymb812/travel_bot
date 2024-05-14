@@ -31,13 +31,13 @@ class User(models.Model):
     username = models.CharField(max_length=32, db_index=True, blank=True, null=True)
     status = models.CharField(choices=StatusType, max_length=32, default=StatusType.work_no_request)
     manager = models.ForeignKey('User', to_field='user_id', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Первая активность')
+    last_activity = models.DateTimeField(null=True, verbose_name='Последняя активность')
 
     def __str__(self):
-        display = self.fio
+        display = self.username
         if not display:
-            display = self.username
+            display = self.fio
             if not display:
                 return f'{self.user_id}'
         return display
@@ -82,6 +82,23 @@ class Request(models.Model):
     manager_answer = models.CharField(max_length=4096, blank=True, null=True)
     manager = models.ForeignKey('User', to_field='user_id', related_name='requests_manager', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ManagerCard(models.Model):
+    class Meta:
+        db_table = 'managers_cards'
+        ordering = ['id']
+        verbose_name = 'Карточки менеджеров'
+        verbose_name_plural = verbose_name
+
+    id = models.AutoField(primary_key=True, db_index=True)
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=2048)
+    photo = models.CharField(max_length=256, null=True, blank=True)
+    order_priority = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.name
 
 
 class FAQ(models.Model):

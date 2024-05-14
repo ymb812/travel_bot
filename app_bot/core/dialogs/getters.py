@@ -1,5 +1,5 @@
 from aiogram.enums import ContentType
-from core.database.models import User, UserLog, FAQ, Post
+from core.database.models import User, UserLog, FAQ, Post, ManagerCard
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 from core.dialogs.callbacks import get_username_or_link
@@ -28,6 +28,8 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
         post_id = settings.requirements_post_id
     elif 'poizon' in dialog_manager.event.data:
         post_id = settings.poizon_post_id
+    elif 'alipay' in dialog_manager.event.data:
+        post_id = settings.alipay_post_id
     elif 'contract' in dialog_manager.event.data:
         post_id = settings.contract_post_id
 
@@ -66,6 +68,29 @@ async def get_questions(dialog_manager: DialogManager, **kwargs):
     return {
         'questions': questions,
         'questions_texts': questions_texts,
+    }
+
+
+async def get_managers_cards(dialog_manager: DialogManager, **kwargs):
+    current_page = await dialog_manager.find('manager_card_scroll').get_page()
+    managers_cards = await ManagerCard.all().order_by('order_priority')
+    current_card = managers_cards[current_page]
+
+    # data for CallbackHandler
+    if managers_cards:
+        dialog_manager.dialog_data['pages'] = len(managers_cards)
+    else:
+        raise ValueError
+
+    media_content = MediaAttachment(ContentType.PHOTO, url=current_card.photo)
+    msg_text = f'<b>{current_card.name}</b>\n\n' \
+               f'{current_card.description}'
+
+    return {
+        'media_content': media_content,
+        'msg_text': msg_text,
+        'pages': len(managers_cards),
+        'current_page': current_page + 1,
     }
 
 

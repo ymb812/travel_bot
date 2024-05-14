@@ -1,5 +1,5 @@
 import logging
-from enum import Enum
+import pytz
 from datetime import datetime
 from tortoise import fields
 from tortoise.models import Model
@@ -34,20 +34,21 @@ class User(Model):
     )
     manager = fields.ForeignKeyField('models.User', to_field='user_id', null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    last_activity = fields.DatetimeField(auto_now=True)
 
     @classmethod
     async def update_data(cls, user_id: int, username: str):
         user = await cls.filter(user_id=user_id).first()
+        tz = pytz.timezone('Europe/Moscow')
         if user is None:
             user = await cls.create(
                 user_id=user_id,
                 username=username,
+                last_activity=tz.localize(datetime.now()),
             )
         else:
             await cls.filter(user_id=user_id).update(
                 username=username,
-                updated_at=datetime.now(),
             )
 
         return user
@@ -146,6 +147,18 @@ class RequestLog(Model):
     @classmethod
     async def create_log(cls, manager_id: int, user_id: int, request_id: int = None):
         await cls.create(manager_id=manager_id, user_id=user_id, request_id=request_id)
+
+
+class ManagerCard(Model):
+    class Meta:
+        table = 'managers_cards'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True, index=True)
+    name = fields.CharField(max_length=64)
+    description = fields.CharField(max_length=2048)
+    photo = fields.CharField(max_length=256, null=True)
+    order_priority = fields.IntField(default=1)
 
 
 class FAQ(Model):

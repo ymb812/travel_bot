@@ -8,7 +8,7 @@ from core.database.models import User, Request, UserLog
 from core.keyboards.inline import mailing_kb
 from core.states.mailing import MailingStateGroup
 from core.utils.texts import _, set_admin_commands
-from core.excel.excel_generator import create_excel
+from core.excel.excel_generator import create_excel, manager_daily_excel
 from settings import settings
 
 
@@ -32,7 +32,7 @@ async def manager_excel_stats(message: types.Message):
     if user.status not in ['admin', 'manager']:
         return
 
-    file_in_memory = await create_excel(model=UserLog)
+    file_in_memory = await manager_daily_excel()
     await message.answer_document(document=types.BufferedInputFile(file_in_memory.read(), filename='Users.xlsx'))
 
 

@@ -10,7 +10,7 @@ from aiogram_dialog.widgets.kbd import Select, Button
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager_support import ManagerSupportStateGroup
 from core.states.manager import ManagerStateGroup
-from core.database.models import User, Request, RequestLog
+from core.database.models import User, Request, RequestLog, ManagerCard
 from core.keyboards.inline import add_comment_kb
 from core.user_manager.user_manager import add_manager_to_user
 from core.utils.texts import _
@@ -180,6 +180,23 @@ class MainMenuCallbackHandler:
         manager_to_send = await add_manager_to_user(user_id=callback.from_user.id, without_request=True)
 
         await dialog_manager.start(state=ManagerSupportStateGroup.input_fio)
+
+
+    # open managers_cards
+    @classmethod
+    async def open_managers_cards(
+            cls,
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+    ):
+        # check if there are any users here
+        managers_cards = await ManagerCard.all()
+        if not managers_cards:
+            await callback.message.answer(text='Информации о менеджерах пока нет...')
+            return
+
+        await dialog_manager.switch_to(MainMenuStateGroup.managers_cards)
 
 
 class ManagerSupportCallbackHandler:
