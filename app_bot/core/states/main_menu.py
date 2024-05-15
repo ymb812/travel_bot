@@ -17,10 +17,9 @@ class MainMenuStateGroup(StatesGroup):
 
     cases_reviews_currency = State()
 
-    input_photo = State()
-    input_volume = State()
+    input_length = State()
     input_width = State()
-    input_density = State()
-    input_weight = State()
+    input_height = State()
+    input_photo = State()
 
     managers_cards = State()

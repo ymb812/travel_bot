@@ -25,7 +25,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
-            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_photo),
+            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_length),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
             Url(Const(text='Оставьте свой отзыв'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
@@ -151,28 +151,19 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.faq
     ),
 
-    # calculator_data input_photo
+
+
+    # calculator_data input_length
     Window(
         Const(text=_('INPUT_CALCULATOR_DATA')),
-        MessageInput(
-            func=MainMenuCallbackHandler.entered_calculator_photo,
-            content_types=[ContentType.PHOTO],
-        ),
-        Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
-        state=MainMenuStateGroup.input_photo
-    ),
-
-    # input_volume
-    Window(
-        Const(text='Введите объем'),
         TextInput(
-            id='input_volume',
+            id='input_length',
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_photo', state=MainMenuStateGroup.input_photo),
-        state=MainMenuStateGroup.input_volume,
+        Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        state=MainMenuStateGroup.input_length
     ),
 
     # input_width
@@ -183,31 +174,31 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_volume', state=MainMenuStateGroup.input_volume),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_length', state=MainMenuStateGroup.input_length),
         state=MainMenuStateGroup.input_width,
     ),
 
-    # input_density
+    # input_height
     Window(
-        Const(text='Введите плотность'),
+        Const(text='Введите высоту'),
         TextInput(
-            id='input_density',
+            id='input_height',
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
-        state=MainMenuStateGroup.input_density,
+        state=MainMenuStateGroup.input_height,
     ),
 
-    # input_weight
+    # input_photo
     Window(
-        Const(text='Введите вес'),
-        TextInput(
-            id='input_weight',
-            type_factory=str,
-            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        Const(text=_('Финальный шаг - прикрепите фото (не обязательно)')),
+        MessageInput(
+            func=MainMenuCallbackHandler.entered_calculator_photo,
+            content_types=[ContentType.PHOTO],
         ),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_density', state=MainMenuStateGroup.input_density),
-        state=MainMenuStateGroup.input_weight,
+        Button(Const(text='Пропустить и отправить данные'), id='send_new_request', on_click=MainMenuCallbackHandler.create_new_request),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_heigth', state=MainMenuStateGroup.input_height),
+        state=MainMenuStateGroup.input_photo
     ),
 )
