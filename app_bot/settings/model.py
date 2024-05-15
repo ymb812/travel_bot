@@ -32,6 +32,8 @@ class StaticContent(BaseModel):
 class Dialogues(BaseModel):
     categories_per_page_height: int = fields.Field(alias='CATEGORIES_HEIGHT')
     categories_per_page_width: int = fields.Field(alias='CATEGORIES_WIDTH')
+    faq_per_page_height: int = fields.Field(alias='FAQ_HEIGHT')
+    faq_per_page_width: int = fields.Field(alias='FAQ_WIDTH')
 
 
 class Broadcaster(BaseModel):

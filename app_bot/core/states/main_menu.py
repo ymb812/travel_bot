@@ -6,6 +6,8 @@ class MainMenuStateGroup(StatesGroup):
 
     pick_info = State()
     info = State()
+    socials = State()
+    warehouse = State()
 
     pick_requirements = State()
     requirements = State()

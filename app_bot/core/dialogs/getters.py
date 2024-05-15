@@ -13,9 +13,9 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
 
     post_id = None
-    if 'info' in dialog_manager.event.data:
+    if 'info' in dialog_manager.event.data:  # useless cuz of new window
         post_id = settings.info_post_id
-    elif 'socials' in dialog_manager.event.data:
+    elif 'socials' in dialog_manager.event.data:  # useless cuz of new window
         post_id = settings.socials_post_id
     elif 'addresses' in dialog_manager.event.data:
         post_id = settings.addresses_post_id
