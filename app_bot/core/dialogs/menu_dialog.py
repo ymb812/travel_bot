@@ -1,9 +1,10 @@
 from aiogram import F
 from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.common.scroll import sync_scroll
 from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const, Format, List
 from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, Column, StubScroll, Button, Row, \
     FirstPage, LastPage, Select, SwitchTo, Url
 from core.states.main_menu import MainMenuStateGroup
@@ -27,7 +28,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_length),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
-            Url(Const(text='Оставьте свой отзыв'), id='url_', url=Const('https://t.me/MG3_ChTr')),
+            Url(Const(text='Если у вас есть жалобы, напишите нам'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
         state=MainMenuStateGroup.menu,
     ),
@@ -46,8 +47,9 @@ main_menu_dialog = Dialog(
 
     # warehouse
     Window(
-        Const(text='Ссылка на прямую видео-трансляцию с нашего склада 👇'),
-        Url(Const(text='Обзор склада'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
+        Const(text='Ссылки на обзор нашего склада 👇'),
+        Url(Const(text='Прямая трансляция'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
+        Url(Const(text='Ссылка на фотографии'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
     ),
@@ -122,9 +124,14 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.cases_reviews_currency
     ),
 
-    # pick faq
+    # pick faq - scroll text and buttons
     Window(
-        Format(text='{questions_texts}'),
+        List(
+            Format(text='{item}'),
+            items='questions_texts',
+            id='questions_text_scroll',
+            page_size=settings.faq_per_page_height,
+        ),
         CustomPager(
             Select(
                 id='_question_select',
@@ -136,6 +143,7 @@ main_menu_dialog = Dialog(
             id='question_group',
             height=settings.faq_per_page_height,
             width=settings.faq_per_page_width,
+            on_page_changed=sync_scroll(scroll_id='questions_text_scroll'),
             hide_on_single_page=True,
         ),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),

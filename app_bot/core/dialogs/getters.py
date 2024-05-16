@@ -61,10 +61,9 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
 
 async def get_questions(dialog_manager: DialogManager, **kwargs):
     questions = await FAQ.all().order_by('order_priority')
-    questions_texts = ''
+    questions_texts = []
     for question in questions:
-        questions_texts += f'{question.order_priority}. {question.question}\n\n'
-
+        questions_texts.append(f'{question.order_priority}. {question.question}\n')
     return {
         'questions': questions,
         'questions_texts': questions_texts,
