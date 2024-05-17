@@ -8,6 +8,8 @@ class MainMenuStateGroup(StatesGroup):
     info = State()
     socials = State()
     warehouse = State()
+    addresses = State()
+    reviews = State()
 
     pick_requirements = State()
     requirements = State()

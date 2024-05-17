@@ -21,7 +21,7 @@ main_menu_dialog = Dialog(
         Const(text=_('PICK_ACTION')),
         Column(
             SwitchTo(Const(text='О компании Чайна Тревел'), id='go_to_info', state=MainMenuStateGroup.pick_info),
-            SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.cases_reviews_currency),
+            SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.reviews),
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
@@ -35,19 +35,19 @@ main_menu_dialog = Dialog(
 
     # pick info
     Window(
-        Const(text=_('PICK_ACTION')),
+        Const(text=_('О компании «чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
         SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.info),
         SwitchTo(Const(text='Реквизиты компании'), id='payment_data', state=MainMenuStateGroup.info),
-        Button(Const(text='Наши менеджеры'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
+        Button(Const(text='Сотрудники China Trevel'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_info
     ),
 
     # warehouse
     Window(
-        Const(text='Ссылки на обзор нашего склада 👇'),
+        Const(text='Обзор нашего склада. Выберите действие ⤵️'),
         Url(Const(text='Прямая трансляция'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
         Url(Const(text='Ссылка на фотографии'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
@@ -60,8 +60,18 @@ main_menu_dialog = Dialog(
         Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/MG3_ChTr')),
         Url(Const(text='Instagram'), id='url_inst', url=Const('https://instagram.com/china__trevel?igshid=YmMyMTA2M2Y=')),
         Url(Const(text='ВКонтакте'), id='url_vk', url=Const('https://vk.com/chinatrevel')),
+        Url(Const(text='Сайт'), id='url_vk', url=Const('https://chinatravel-tk.ru/')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.socials
+    ),
+
+    # reviews
+    Window(
+        Const(text='Наши отзывы'),
+        Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://t.me/MG3_ChTr')),
+        Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/MG3_ChTr')),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        state=MainMenuStateGroup.reviews
     ),
 
     # info
