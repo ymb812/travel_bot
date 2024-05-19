@@ -9,7 +9,7 @@ from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, C
     FirstPage, LastPage, Select, SwitchTo, Url
 from core.states.main_menu import MainMenuStateGroup
 from core.utils.texts import _
-from core.dialogs.custom_content import CustomPager
+from core.dialogs.custom_content import CustomPager, Multicolumn
 from core.dialogs.callbacks import MainMenuCallbackHandler
 from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards,\
     get_addresses_content, get_cases, get_case
@@ -160,12 +160,21 @@ main_menu_dialog = Dialog(
     Window(
         Const(text='Наши кейсы'),
         CustomPager(
-            Select(
-                id='_cases_select',
-                items='cases',
-                item_id_getter=lambda item: item.id,
-                text=Format(text='Кейс {item.order_priority}'),
-                on_click=MainMenuCallbackHandler.selected_case,
+            Multicolumn(
+                Select(
+                    id='_cases_odd_select',
+                    items='cases_odd',
+                    item_id_getter=lambda item: item.id,
+                    text=Format(text='Кейс {item.order_priority}'),
+                    on_click=MainMenuCallbackHandler.selected_case,
+                ),
+                Select(
+                    id='_cases_even_select',
+                    items='cases_even',
+                    item_id_getter=lambda item: item.id,
+                    text=Format(text='Кейс {item.order_priority}'),
+                    on_click=MainMenuCallbackHandler.selected_case,
+                ),
             ),
             id='case_group',
             height=5,

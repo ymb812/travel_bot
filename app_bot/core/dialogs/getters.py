@@ -126,9 +126,12 @@ Warehouse 118A, No. 8 Chuantang Road, Beiyuan Street'''
 
 async def get_cases(dialog_manager: DialogManager, **kwargs):
     cases = await Case.all().order_by('order_priority')
+    cases_even = [case for case in cases if case.id % 2 == 0]
+    cases_odd = [case for case in cases if case.id % 2 != 0]
 
     return {
-        'cases': cases
+        'cases_even': cases_even,
+        'cases_odd': cases_odd,
     }
 
 

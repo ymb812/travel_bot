@@ -1,7 +1,10 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram_dialog import DialogManager
-from aiogram_dialog.widgets.kbd import ScrollingGroup
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Group, Keyboard
 from core.utils.texts import _
+from itertools import zip_longest, chain
+from typing import List, Optional
+from aiogram_dialog.widgets.common import WhenCondition
 
 
 class CustomPager(ScrollingGroup):
@@ -48,4 +51,22 @@ class CustomPager(ScrollingGroup):
                     callback_data=self._item_callback_data(next_page),
                 ),
             ],
+        ]
+
+
+class Multicolumn(Group):
+    def __init__(self, *buttons: Keyboard, id: Optional[str] = None,
+                 when: WhenCondition = None):
+        super().__init__(*buttons, id=id, when=when)
+
+    async def _render_keyboard(
+            self, data, manager: DialogManager,
+    ) -> List[List[InlineKeyboardButton]]:
+        columns = []
+        for button in self.buttons:
+            subkbd = await button.render_keyboard(data, manager)
+            columns.append(list(chain.from_iterable(subkbd)))
+        return [
+            list(filter(None, row))
+            for row in zip_longest(*columns)
         ]
