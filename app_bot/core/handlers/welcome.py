@@ -30,6 +30,15 @@ async def start_handler(
     except:
         pass
 
+    # send welcome_video if user does not exist
+    user = await User.get_or_none(user_id=message.from_user.id)
+    if not user:
+        welcome_post = await Post.get(id=settings.welcome_post_id)
+        await message.answer_video(
+            caption=welcome_post.text,
+            video=welcome_post.video_file_id,
+        )
+
     # add basic info to db
     user = await User.update_data(
         user_id=message.from_user.id,
@@ -46,12 +55,6 @@ async def start_handler(
         await dialog_manager.start(state=ManagerStateGroup.manager_menu, mode=StartMode.RESET_STACK)
 
     else:
-        welcome_post = await Post.get(id=settings.welcome_post_id)
-        await message.answer_video(
-            caption=welcome_post.text,
-            video=welcome_post.video_file_id,
-        )
-
         # check deep link, add to manager, start manager support
         if command.args == settings.deep_link_args:
             await add_manager_to_user(user_id=message.from_user.id, without_request=True)

@@ -171,6 +171,17 @@ class FAQ(Model):
     order_priority = fields.IntField(unique=True)
 
 
+class Case(Model):
+    class Meta:
+        table = 'cases'
+
+    id = fields.BigIntField(pk=True)
+    name = fields.CharField(max_length=128)
+    description = fields.CharField(max_length=2048)
+    photo_file_id = fields.CharField(max_length=256, null=True)
+    order_priority = fields.IntField(unique=True)
+
+
 class Dispatcher(Model):
     class Meta:
         table = 'mailings'

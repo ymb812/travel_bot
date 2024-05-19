@@ -1,16 +1,11 @@
-from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.input import TextInput, MessageInput
-from aiogram_dialog.widgets.media import DynamicMedia
-from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Column, Url, SwitchTo, Button, Start, Select
+from aiogram_dialog.widgets.input import TextInput
+from aiogram_dialog.widgets.text import Const
+from aiogram_dialog.widgets.kbd import Column, SwitchTo, Button, Start
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager_support import ManagerSupportStateGroup
 from core.utils.texts import _
-from core.dialogs.custom_content import CustomPager
 from core.dialogs.callbacks import ManagerSupportCallbackHandler
-from core.dialogs.getters import get_main_menu_content, get_questions, get_question
-from settings import settings
 
 
 manager_support_dialog = Dialog(

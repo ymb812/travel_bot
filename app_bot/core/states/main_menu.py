@@ -6,6 +6,15 @@ class MainMenuStateGroup(StatesGroup):
 
     pick_info = State()
     info = State()
+    socials = State()
+
+    warehouse = State()
+    warehouse_video = State()
+
+    addresses = State()
+    addresses_info = State()
+
+    reviews = State()
 
     pick_requirements = State()
     requirements = State()
@@ -13,12 +22,14 @@ class MainMenuStateGroup(StatesGroup):
     pick_faq = State()
     faq = State()
 
-    cases_reviews_currency = State()
+    pick_case = State()
+    case = State()
 
-    input_photo = State()
-    input_volume = State()
+    currency = State()
+
+    input_length = State()
     input_width = State()
-    input_density = State()
-    input_weight = State()
+    input_height = State()
+    input_photo = State()
 
     managers_cards = State()
