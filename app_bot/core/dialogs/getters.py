@@ -1,5 +1,5 @@
 from aiogram.enums import ContentType
-from core.database.models import User, UserLog, FAQ, Post, ManagerCard
+from core.database.models import User, UserLog, FAQ, Post, ManagerCard, Case
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 from core.dialogs.callbacks import get_username_or_link
@@ -33,7 +33,7 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     elif 'contract' in dialog_manager.event.data:
         post_id = settings.contract_post_id
 
-    elif 'cases' in dialog_manager.event.data:
+    elif 'pick_case' in dialog_manager.event.data:
         post_id = settings.cases_post_id
 
     elif 'reviews' in dialog_manager.event.data:
@@ -59,6 +59,94 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def get_addresses_content(dialog_manager: DialogManager, **kwargs):
+    if 'address_foshan_1' in dialog_manager.event.data:
+        msg_text = '''Фошань 
+
+收货人: 王洪威
+手机号码: 18520718666
+ 广东省佛山市南海区里水镇
+流潮村共同1号之二
+
+Адрес Фошань  на английском языке：
+2 zhi，1- gongtong，liuchaocun,Lishui Town， Nanhai District ， foshan city,  China
+получителя :Wanghongwei
+телефон: +8618520718666
+Почтовый индекс: （528244）'''
+
+    elif 'address_foshan_2' in dialog_manager.event.data:
+        msg_text = '''Фошань 
+
+收货人: 孟亚文
+手机号码: 17786857118
+ 广东省佛山市南海区里水镇
+流潮村共同1号之三
+
+3 zhi，1- gongtong，liuchaocun,Lishui Town， Nanhai District ， foshan city,  China
+получителя :Mengyawen
+телефон: +86
+Почтовый индекс: 528244'''
+
+    elif 'address_pekin' in dialog_manager.event.data:
+        msg_text = '''Пекин:
+
+北京市朝阳区日坛北路日坛国际贸易中心B座118A-288A库房
+戈启东18733716378
+
+На английском
+Warehouse 118A-288A, Building B, Ritan International Trade Center, Ritan North Road, Chaoyang District, Beijing
+Ge Qidong 18733716378'''
+
+    elif 'address_iu' in dialog_manager.event.data:
+        msg_text = '''Иу:
+
+戈启东18520718666
+浙江省 金华市 义乌市
+北苑街道川塘路8号 118A 库房
+
+На английском 
+Ge Qidong 18520718666
+Yiwu City, Jinhua City, Zhejiang Province
+Warehouse 118A, No. 8 Chuantang Road, Beiyuan Street'''
+
+    elif 'address_russia_1' in dialog_manager.event.data:
+        msg_text = '''Люблено 
+
+Москва, ТЯК Люблино, Тихорецкий бульвар дом 1 (вход- 7 и 7А).'''
+
+    elif 'address_russia_2' in dialog_manager.event.data:
+        msg_text = '''Южные Ворота          
+                
+Москва, Южные ворота, МКАД 19 км. Вход 15 напротив карго "Сбор грузов".'''
+
+    return {
+        'msg_text': msg_text,
+    }
+
+
+async def get_cases(dialog_manager: DialogManager, **kwargs):
+    cases = await Case.all().order_by('order_priority')
+
+    return {
+        'cases': cases
+    }
+
+
+async def get_case(dialog_manager: DialogManager, **kwargs):
+    case = await Case.get(id=dialog_manager.dialog_data['case_id'])
+    media_content = None
+    if case.photo_file_id:
+        media_content = MediaAttachment(ContentType.PHOTO, url=case.photo_file_id)
+
+    msg_text = f'<b>{case.name}</b>\n\n' \
+               f'{case.description}'
+
+    return {
+        'msg_text': msg_text,
+        'media_content': media_content,
+    }
+
+
 async def get_questions(dialog_manager: DialogManager, **kwargs):
     questions = await FAQ.all().order_by('order_priority')
     questions_texts = []
@@ -67,6 +155,15 @@ async def get_questions(dialog_manager: DialogManager, **kwargs):
     return {
         'questions': questions,
         'questions_texts': questions_texts,
+    }
+
+
+async def get_question(dialog_manager: DialogManager, **kwargs):
+    question = await FAQ.get(id=dialog_manager.dialog_data['question_id'])
+    media_content = MediaAttachment(ContentType.VIDEO, url=question.video_file_id)
+
+    return {
+        'media_content': media_content,
     }
 
 
@@ -90,15 +187,6 @@ async def get_managers_cards(dialog_manager: DialogManager, **kwargs):
         'msg_text': msg_text,
         'pages': len(managers_cards),
         'current_page': current_page + 1,
-    }
-
-
-async def get_question(dialog_manager: DialogManager, **kwargs):
-    question = await FAQ.get(id=dialog_manager.dialog_data['question_id'])
-    media_content = MediaAttachment(ContentType.VIDEO, url=question.video_file_id)
-
-    return {
-        'media_content': media_content,
     }
 
 

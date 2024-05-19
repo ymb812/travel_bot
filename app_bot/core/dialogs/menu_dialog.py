@@ -11,7 +11,8 @@ from core.states.main_menu import MainMenuStateGroup
 from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager
 from core.dialogs.callbacks import MainMenuCallbackHandler
-from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards
+from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards,\
+    get_addresses_content, get_cases, get_case
 from settings import settings
 
 
@@ -22,8 +23,8 @@ main_menu_dialog = Dialog(
         Column(
             SwitchTo(Const(text='О компании Чайна Тревел'), id='go_to_info', state=MainMenuStateGroup.pick_info),
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.reviews),
-            SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.cases_reviews_currency),
-            SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.cases_reviews_currency),
+            SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.pick_case),
+            SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.currency),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_length),
@@ -38,7 +39,7 @@ main_menu_dialog = Dialog(
         Const(text=_('О компании «чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
-        SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.info),
+        SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.addresses),
         SwitchTo(Const(text='Реквизиты компании'), id='payment_data', state=MainMenuStateGroup.info),
         Button(Const(text='Сотрудники China Trevel'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
@@ -52,6 +53,27 @@ main_menu_dialog = Dialog(
         Url(Const(text='Ссылка на фотографии'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
+    ),
+
+    # addresses
+    Window(
+        Const(text='Наши адреса'),
+        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Пекин'), id='address_pekin', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Иу'), id='address_iu', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Россия, Люблено'), id='address_russia_1', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Россия, Южные Ворота'), id='address_russia_2', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
+        state=MainMenuStateGroup.addresses
+    ),
+
+    # addresses_info
+    Window(
+        Format(text='{msg_text}'),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_addresses', state=MainMenuStateGroup.addresses),
+        getter=get_addresses_content,
+        state=MainMenuStateGroup.addresses_info
     ),
 
     # socials
@@ -125,14 +147,45 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.requirements
     ),
 
-    # cases / reviews / currency
+    # currency
     Window(
         DynamicMedia(selector='media_content'),
         Format(text='{msg_text}'),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         getter=get_main_menu_content,
-        state=MainMenuStateGroup.cases_reviews_currency
+        state=MainMenuStateGroup.currency
     ),
+
+    # pick_case
+    Window(
+        Const(text='Наши кейсы'),
+        CustomPager(
+            Select(
+                id='_cases_select',
+                items='cases',
+                item_id_getter=lambda item: item.id,
+                text=Format(text='Кейс {item.order_priority}'),
+                on_click=MainMenuCallbackHandler.selected_case,
+            ),
+            id='case_group',
+            height=5,
+            width=2,
+            hide_on_single_page=True,
+        ),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        getter=get_cases,
+        state=MainMenuStateGroup.pick_case
+    ),
+
+    # case
+    Window(
+        DynamicMedia(selector='media_content'),
+        Format(text='{msg_text}'),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_cases', state=MainMenuStateGroup.pick_case),
+        getter=get_case,
+        state=MainMenuStateGroup.case
+    ),
+
 
     # pick faq - scroll text and buttons
     Window(

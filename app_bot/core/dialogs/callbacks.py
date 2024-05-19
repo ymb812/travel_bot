@@ -130,6 +130,17 @@ class MainMenuCallbackHandler:
         dialog_manager.dialog_data['question_id'] = item_id
         await dialog_manager.switch_to(MainMenuStateGroup.faq)
 
+    @classmethod
+    async def selected_case(
+            cls,
+            callback: CallbackQuery,
+            widget: Select,
+            dialog_manager: DialogManager,
+            item_id: str,
+    ):
+        dialog_manager.dialog_data['case_id'] = item_id
+        await dialog_manager.switch_to(MainMenuStateGroup.case)
+
 
     # create new calculator request
     @staticmethod

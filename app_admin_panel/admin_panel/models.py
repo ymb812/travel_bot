@@ -117,6 +117,23 @@ class FAQ(models.Model):
         return f'{self.id}'
 
 
+class Case(models.Model):
+    class Meta:
+        db_table = 'cases'
+        ordering = ['id']
+        verbose_name = 'Кейсы клиентов'
+        verbose_name_plural = verbose_name
+
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=128)
+    description = models.TextField()
+    photo_file_id = models.CharField(max_length=256, null=True, blank=True)
+    order_priority = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return f'{self.id}'
+
+
 class Dispatcher(models.Model):
     class Meta:
         db_table = 'mailings'
