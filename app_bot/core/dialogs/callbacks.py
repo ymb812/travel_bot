@@ -46,11 +46,14 @@ async def switch_page(dialog_manager: DialogManager, scroll_id: str, message: Me
 
 # end of calculator
 async def create_new_request(dialog_manager: DialogManager, user_id: int, bot: Bot):
+    calculator_data = dialog_manager.dialog_data['input_weight'] + dialog_manager.dialog_data['input_length'] +\
+                      dialog_manager.dialog_data['input_width'] + dialog_manager.dialog_data['input_height'] +\
+                      dialog_manager.dialog_data['input_density']
     request = await Request.create_request(
         id=generate_random_string(),
         user_id=user_id,
         type=Request.RequestType.calculator,
-        calculator_data=dialog_manager.dialog_data['calculator_data'],
+        calculator_data=calculator_data,
         calculator_photo=dialog_manager.dialog_data.get('calculator_photo'),
     )
 
@@ -142,6 +145,39 @@ class MainMenuCallbackHandler:
         await dialog_manager.switch_to(MainMenuStateGroup.case)
 
 
+    @staticmethod
+    async def entered_calculator_text_data(
+            message: Message,
+            widget: ManagedTextInput,
+            dialog_manager: DialogManager,
+            value: str
+    ):
+        if widget.widget_id == 'input_weight':
+            dialog_manager.dialog_data['input_weight'] = f'Вес: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_length)
+            return
+
+        elif widget.widget_id == 'input_length':
+            dialog_manager.dialog_data['input_length'] = f'Длина: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_width)
+            return
+
+        elif widget.widget_id == 'input_width':
+            dialog_manager.dialog_data['input_width'] = f'Ширина: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_height)
+            return
+
+        elif widget.widget_id == 'input_height':
+            dialog_manager.dialog_data['input_height'] = f'Высота: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_density)
+            return
+
+        elif widget.widget_id == 'input_density':
+            dialog_manager.dialog_data['input_density'] = f'Плотность: {value}\n'
+            await dialog_manager.switch_to(MainMenuStateGroup.input_photo)
+            return
+
+
     # create new calculator request
     @staticmethod
     async def entered_calculator_photo(
@@ -163,40 +199,6 @@ class MainMenuCallbackHandler:
         )  # end of calculator
 
 
-    @staticmethod
-    async def entered_calculator_text_data(
-            message: Message,
-            widget: ManagedTextInput,
-            dialog_manager: DialogManager,
-            value: str
-    ):
-        # if widget.widget_id == 'input_volume':
-        #     dialog_manager.dialog_data['calculator_data'] = f'Объем: {value}\n'
-        #     await dialog_manager.switch_to(MainMenuStateGroup.input_width)
-
-        if widget.widget_id == 'input_length':
-            dialog_manager.dialog_data['calculator_data'] = f'Длина: {value}\n'
-            await dialog_manager.switch_to(MainMenuStateGroup.input_width)
-            return
-
-        elif widget.widget_id == 'input_width':
-            dialog_manager.dialog_data['calculator_data'] += f'Ширина: {value}\n'
-            await dialog_manager.switch_to(MainMenuStateGroup.input_height)
-            return
-
-        elif widget.widget_id == 'input_height':
-            dialog_manager.dialog_data['calculator_data'] += f'Высота: {value}\n'
-            await dialog_manager.switch_to(MainMenuStateGroup.input_photo)
-            return
-
-        # elif widget.widget_id == 'input_density':
-        #     dialog_manager.dialog_data['calculator_data'] += f'Плотность: {value}\n'
-        #     await dialog_manager.switch_to(MainMenuStateGroup.input_weight)
-
-        # elif widget.widget_id == 'input_weight':
-        #     dialog_manager.dialog_data['calculator_data'] += f'Вес: {value}\n'
-
-
     # skip photo
     @classmethod
     async def create_new_request(
@@ -213,7 +215,7 @@ class MainMenuCallbackHandler:
         )  # end of calculator
 
 
-    # add manager_id and start dialog
+    # add manager_id and send 2 msg
     @classmethod
     async def start_manager_support(
             cls,
@@ -225,6 +227,39 @@ class MainMenuCallbackHandler:
         manager_to_send = await add_manager_to_user(user_id=callback.from_user.id, without_request=True)
 
         await dialog_manager.start(state=ManagerSupportStateGroup.input_fio)
+
+
+    # add manager_id and start dialog
+    @classmethod
+    async def send_msg_to_manager(
+            cls,
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+    ):
+        user = await User.get_or_none(user_id=callback.from_user.id)
+        if not user:
+            await callback.message.answer(text='Пропишите /start и попробуйте снова')
+            return
+
+        # add manager and log for future working
+        try:
+            manager_to_send = await add_manager_to_user(user_id=callback.from_user.id, without_request=True)
+        except Exception as e:
+            logger.error(f'Error to pin manager to user_id={callback.from_user.id}', exc_info=e)
+            return
+
+        # send info msg to user and notification to manager
+        if manager_to_send:
+            await callback.message.answer(text='Наш менеджер свяжется с вами в ближайшее время')
+            await dialog_manager.event.bot.send_message(
+                chat_id=manager_to_send.user_id,
+                text=f'Обратился клиент {get_username_or_link(user=user)} - не знает данных'
+            )
+        else:
+            await callback.message.answer(text='Активных менеджеров нет - обратитесь в поддержку')
+
+        await dialog_manager.switch_to(state=MainMenuStateGroup.menu)
 
 
     # open managers_cards

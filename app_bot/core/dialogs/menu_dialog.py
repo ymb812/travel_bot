@@ -27,7 +27,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.currency),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
-            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_length),
+            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
             Url(Const(text='Если у вас есть жалобы, напишите нам'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
@@ -244,16 +244,38 @@ main_menu_dialog = Dialog(
 
 
 
-    # calculator_data input_length
+    # start calculator_data - pick_calculator
     Window(
-        Const(text=_('INPUT_CALCULATOR_DATA')),
+        Const(text='Знаете ли вы габариты груза?'),
+        SwitchTo(Const(text='Да'), id='calculator_yes', state=MainMenuStateGroup.input_weight),
+        Button(Const(text='Нет'), id='calculator_no', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        state=MainMenuStateGroup.pick_calculator
+    ),
+
+    # input_weight
+    Window(
+        Const(text='Введите вес'),
+        TextInput(
+            id='input_weight',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_calculator', state=MainMenuStateGroup.pick_calculator),
+        state=MainMenuStateGroup.input_weight,
+    ),
+
+    # input_length
+    Window(
+        Const(text='Введите длину'),
         TextInput(
             id='input_length',
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_weight', state=MainMenuStateGroup.input_weight),
         state=MainMenuStateGroup.input_length
     ),
 
@@ -265,6 +287,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_length', state=MainMenuStateGroup.input_length),
         state=MainMenuStateGroup.input_width,
     ),
@@ -277,13 +300,27 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
         state=MainMenuStateGroup.input_height,
     ),
 
+    # input_density
+    Window(
+        Const(text='Введите плотность'),
+        TextInput(
+            id='input_density',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_height', state=MainMenuStateGroup.input_height),
+        state=MainMenuStateGroup.input_density,
+    ),
+
     # input_photo
     Window(
-        Const(text=_('Финальный шаг - прикрепите фото (не обязательно)')),
+        Const(text=_('Наберитесь терпения, прикрепите фото!')),
         MessageInput(
             func=MainMenuCallbackHandler.entered_calculator_photo,
             content_types=[ContentType.PHOTO],

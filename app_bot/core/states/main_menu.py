@@ -27,9 +27,12 @@ class MainMenuStateGroup(StatesGroup):
 
     currency = State()
 
+    pick_calculator = State()
+    input_weight = State()
     input_length = State()
     input_width = State()
     input_height = State()
+    input_density = State()
     input_photo = State()
 
     managers_cards = State()
