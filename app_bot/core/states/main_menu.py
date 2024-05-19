@@ -7,7 +7,9 @@ class MainMenuStateGroup(StatesGroup):
     pick_info = State()
     info = State()
     socials = State()
+
     warehouse = State()
+    warehouse_video = State()
 
     addresses = State()
     addresses_info = State()

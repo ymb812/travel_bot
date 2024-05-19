@@ -12,7 +12,7 @@ from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager, Multicolumn
 from core.dialogs.callbacks import MainMenuCallbackHandler
 from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards,\
-    get_addresses_content, get_cases, get_case
+    get_addresses_content, get_cases, get_case, get_warehouse_video
 from settings import settings
 
 
@@ -51,8 +51,19 @@ main_menu_dialog = Dialog(
         Const(text='Обзор нашего склада. Выберите действие ⤵️'),
         Url(Const(text='Прямая трансляция'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
         Url(Const(text='Ссылка на фотографии'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
+        SwitchTo(Const(text='Видео 1'), id='warehouse_video_1', state=MainMenuStateGroup.warehouse_video),
+        SwitchTo(Const(text='Видео 2'), id='warehouse_video_2', state=MainMenuStateGroup.warehouse_video),
+        SwitchTo(Const(text='Видео 3'), id='warehouse_video_3', state=MainMenuStateGroup.warehouse_video),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
+    ),
+
+    # warehouse_video
+    Window(
+        DynamicMedia(selector='media_content'),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_warehouse', state=MainMenuStateGroup.warehouse),
+        getter=get_warehouse_video,
+        state=MainMenuStateGroup.warehouse_video
     ),
 
     # addresses

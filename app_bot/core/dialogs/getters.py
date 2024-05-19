@@ -59,6 +59,22 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def get_warehouse_video(dialog_manager: DialogManager, **kwargs):
+    if 'warehouse_video_1' in dialog_manager.event.data:  # useless cuz of new window
+        post_id = 1001
+    elif 'warehouse_video_2' in dialog_manager.event.data:  # useless cuz of new window
+        post_id = 1002
+    elif 'warehouse_video_3' in dialog_manager.event.data:
+        post_id = 1003
+
+    post = await Post.get(id=post_id)
+    media_content = MediaAttachment(ContentType.VIDEO, url=post.video_file_id)
+
+    return {
+        'media_content': media_content,
+    }
+
+
 async def get_addresses_content(dialog_manager: DialogManager, **kwargs):
     if 'address_foshan_1' in dialog_manager.event.data:
         msg_text = '''Фошань 
