@@ -16,7 +16,7 @@ manager_dialog = Dialog(
         Column(
             Select(
                 id='_status_select',
-                items='statuses',
+                items='statuses_for_filter',
                 item_id_getter=lambda item: item.value,
                 text=Format(text='{item.value}'),
                 on_click=ManagerCallbackHandler.selected_status,

@@ -212,10 +212,12 @@ async def get_managers_cards(dialog_manager: DialogManager, **kwargs):
 async def get_statuses(**kwargs) -> dict[str]:
     statuses_dict = {status.name: status.value for status in User.StatusType}
     statuses = [status for status in User.StatusType if status.value not in ['admin', 'manager']]
+    statuses_for_filter = [status for status in User.StatusType if status.value not in ['admin', 'manager', 'Реализован', 'Не реализован']]
 
     return {
         'statuses': statuses,
         'statuses_dict': statuses_dict,
+        'statuses_for_filter': statuses_for_filter,
     }
 
 
