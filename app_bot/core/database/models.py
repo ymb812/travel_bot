@@ -182,6 +182,15 @@ class Case(Model):
     order_priority = fields.IntField(unique=True)
 
 
+class Currency(Model):
+    class Meta:
+        table = 'currency'
+        ordering = ['id']
+
+    id = fields.BigIntField(pk=True)
+    currency = fields.TextField()
+
+
 class Dispatcher(Model):
     class Meta:
         table = 'mailings'

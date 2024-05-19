@@ -300,7 +300,7 @@ class ManagerSupportCallbackHandler:
         if callback.data == 'sell':
             value = 'Выкуп'
 
-        elif callback.data == 'delivery':
+        elif callback.data == 'pick_delivery':
             value = 'Доставка'
 
         elif callback.data == 'sell_and_delivery':

@@ -19,6 +19,9 @@ class MainMenuStateGroup(StatesGroup):
     pick_requirements = State()
     requirements = State()
 
+    pick_delivery = State()
+    delivery = State()
+
     pick_faq = State()
     faq = State()
 

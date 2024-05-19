@@ -1,5 +1,5 @@
 from aiogram.enums import ContentType
-from core.database.models import User, UserLog, FAQ, Post, ManagerCard, Case
+from core.database.models import User, UserLog, FAQ, Post, ManagerCard, Case, Currency
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 from core.dialogs.callbacks import get_username_or_link
@@ -22,8 +22,6 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     elif 'payment_data' in dialog_manager.event.data:
         post_id = settings.payment_data_post_id
 
-    elif 'delivery' in dialog_manager.event.data:
-        post_id = settings.delivery_post_id
     elif 'requirements' in dialog_manager.event.data:
         post_id = settings.requirements_post_id
     elif 'poizon' in dialog_manager.event.data:
@@ -41,7 +39,6 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
 
     elif 'currency' in dialog_manager.event.data:
         post_id = settings.currency_post_id
-
 
 
     post = await Post.get(id=post_id)
@@ -71,6 +68,25 @@ async def get_warehouse_video(dialog_manager: DialogManager, **kwargs):
     media_content = MediaAttachment(ContentType.VIDEO, url=post.video_file_id)
 
     return {
+        'media_content': media_content,
+    }
+
+
+async def get_delivery_files(dialog_manager: DialogManager, **kwargs):
+    if 'delivery_1' in dialog_manager.event.data:
+        post_id = 2001
+    elif 'delivery_2' in dialog_manager.event.data:
+        post_id = 2002
+    elif 'delivery_3' in dialog_manager.event.data:
+        post_id = 2003
+    elif 'delivery_4' in dialog_manager.event.data:
+        post_id = 2004
+
+    post = await Post.get(id=post_id)
+    media_content = MediaAttachment(ContentType.DOCUMENT, url=post.document_file_id)
+
+    return {
+        'msg_text': post.text,
         'media_content': media_content,
     }
 
@@ -244,4 +260,12 @@ async def get_users_by_manager(dialog_manager: DialogManager, **kwargs) -> dict[
         'username': username,
         'user_status': current_user.status,
         'statuses': (await get_statuses(**kwargs))['statuses'],
+    }
+
+
+async def get_currency(dialog_manager: DialogManager, **kwargs):
+    currency = await Currency.first()
+
+    return {
+        'currency': currency.currency,
     }
