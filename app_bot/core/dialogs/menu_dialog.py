@@ -25,7 +25,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.reviews),
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.pick_case),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.currency),
-            SwitchTo(Const(text='Условия работы ⤵️'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
+            SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
@@ -39,7 +39,7 @@ main_menu_dialog = Dialog(
         Const(text=_('О компании «Чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
-        SwitchTo(Const(text='Наши адреса ⤵️'), id='addresses', state=MainMenuStateGroup.addresses),
+        SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.addresses),
         SwitchTo(Const(text='Реквизиты компании'), id='payment_data', state=MainMenuStateGroup.info),
         Button(Const(text='Сотрудники China Trevel'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
@@ -50,7 +50,7 @@ main_menu_dialog = Dialog(
     Window(
         Const(text='Обзор нашего склада. Выберите действие ⤵️'),
         Url(Const(text='Онлайн камера'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
-        Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
+        Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/Obzor-nashego-sklada-05-20')),
         Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+W1Agp7XJS2YxYjcy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
@@ -99,7 +99,7 @@ main_menu_dialog = Dialog(
     # reviews
     Window(
         Const(text='Наши отзывы ⤵️'),
-        Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://t.me/MG3_ChTr')),
+        Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://telegra.ph/Nashi-otzyvy-05-20')),
         Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/+V5I6_2tW-uZiZDUy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.reviews
@@ -137,8 +137,8 @@ main_menu_dialog = Dialog(
 
     # pick requirements
     Window(
-        Const(text=_('PICK_ACTION')),
-        SwitchTo(Const(text='Доставка и ее стоимость'), id='pick_delivery', state=MainMenuStateGroup.pick_delivery),
+        Const(text='Условия работы ⤵️'),
+        Url(Const(text='Доставка и ее стоимость'), id='pick_delivery', url=Const(text='https://telegra.ph/Dostavka-i-eyo-stoimost-05-20')),
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
@@ -156,25 +156,25 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.requirements
     ),
 
-    # pick_delivery
-    Window(
-        Const(text='Информация о доставке'),
-        SwitchTo(Const(text='Цены'), id='delivery_1', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Прейскурант'), id='delivery_2', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Цены на одежду для ж/д'), id='delivery_3', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Цены на одежду'), id='delivery_4', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
-        state=MainMenuStateGroup.pick_delivery
-    ),
-
-    # delivery
-    Window(
-        DynamicMedia(selector='media_content'),
-        Format(text='{msg_text}'),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_delivery', state=MainMenuStateGroup.pick_delivery),
-        getter=get_delivery_files,
-        state=MainMenuStateGroup.delivery
-    ),
+    # # pick_delivery
+    # Window(
+    #     Const(text='Информация о доставке'),
+    #     SwitchTo(Const(text='Цены'), id='delivery_1', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Прейскурант'), id='delivery_2', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Цены на одежду для ж/д'), id='delivery_3', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Цены на одежду'), id='delivery_4', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
+    #     state=MainMenuStateGroup.pick_delivery
+    # ),
+    #
+    # # delivery
+    # Window(
+    #     DynamicMedia(selector='media_content'),
+    #     Format(text='{msg_text}'),
+    #     SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_delivery', state=MainMenuStateGroup.pick_delivery),
+    #     getter=get_delivery_files,
+    #     state=MainMenuStateGroup.delivery
+    # ),
 
     # currency
     Window(
