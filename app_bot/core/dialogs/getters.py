@@ -28,8 +28,10 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
         post_id = settings.poizon_post_id
     elif 'alipay' in dialog_manager.event.data:
         post_id = settings.alipay_post_id
-    elif 'contract' in dialog_manager.event.data:
+    elif 'contract_fiz' in dialog_manager.event.data:
         post_id = settings.contract_post_id
+    elif 'contract_ur' in dialog_manager.event.data:
+        post_id = 114
 
     elif 'pick_case' in dialog_manager.event.data:
         post_id = settings.cases_post_id

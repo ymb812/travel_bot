@@ -142,7 +142,8 @@ main_menu_dialog = Dialog(
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
-        SwitchTo(Const(text='Шаблон договора'), id='contract', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Шаблон договора для физ. лиц'), id='contract_fiz', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Шаблон договора для юр. лиц'), id='contract_ur', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_requirements
     ),
