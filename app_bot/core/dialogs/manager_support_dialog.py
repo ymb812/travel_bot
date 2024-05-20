@@ -27,7 +27,7 @@ manager_support_dialog = Dialog(
         Const(text='Вас интересует выкуп или доставка'),
         Column(
             Button(Const(text='Выкуп'), id='sell', on_click=ManagerSupportCallbackHandler.entered_sell_and_delivery),
-            Button(Const(text='Доставка'), id='delivery', on_click=ManagerSupportCallbackHandler.entered_sell_and_delivery),
+            Button(Const(text='Доставка'), id='pick_delivery', on_click=ManagerSupportCallbackHandler.entered_sell_and_delivery),
             Button(Const(text='Все сразу'), id='sell_and_delivery', on_click=ManagerSupportCallbackHandler.entered_sell_and_delivery),
             SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_fio', state=ManagerSupportStateGroup.input_fio),
         ),

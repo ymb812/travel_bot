@@ -3,9 +3,10 @@ import asyncio
 from aiogram import types, Router, Bot
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from core.database.models import Request
+from core.database.models import Request, Currency
 from core.states.manager import ManagerStateGroup
 from core.utils.texts import set_admin_commands, _
+from settings import settings
 
 
 logger = logging.getLogger(__name__)
@@ -47,3 +48,11 @@ async def input_comment_handler(message: types.Message, bot: Bot, state: FSMCont
 
     await message.answer(text=_('HANDLE_REQUEST_DONE', request_id=request.id))
     await state.clear()
+
+
+@router.channel_post(lambda m: m.text and 'Курс сегодня ' in m.text)
+async def handle_currency(message: types.Message):
+    if str(message.chat.id) != str(settings.required_channel_id):
+        return
+    currency = message.text
+    await Currency.update_or_create(defaults={'currency': currency})

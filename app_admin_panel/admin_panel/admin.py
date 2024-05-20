@@ -33,6 +33,7 @@ class UserAdmin(CustomImportExport):
     list_display = ('id', 'user_id', 'fio', 'username', 'status', 'manager', 'created_at', 'last_activity')
     list_display_links = ('id', 'user_id')
     list_editable = ('fio', 'username', 'status', 'manager')
+    list_filter = ('status',)
 
 
 @admin.register(UserLog)

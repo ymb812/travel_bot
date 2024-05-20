@@ -5,14 +5,14 @@ from aiogram_dialog.widgets.common.scroll import sync_scroll
 from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format, List
-from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Start, Column, StubScroll, Button, Row, \
+from aiogram_dialog.widgets.kbd import PrevPage, NextPage, CurrentPage, Column, StubScroll, Button, Row, \
     FirstPage, LastPage, Select, SwitchTo, Url
 from core.states.main_menu import MainMenuStateGroup
 from core.utils.texts import _
 from core.dialogs.custom_content import CustomPager, Multicolumn
 from core.dialogs.callbacks import MainMenuCallbackHandler
 from core.dialogs.getters import get_main_menu_content, get_questions, get_question, get_managers_cards,\
-    get_addresses_content, get_cases, get_case, get_warehouse_video
+    get_addresses_content, get_cases, get_case, get_warehouse_video, get_currency, get_delivery_files
 from settings import settings
 
 
@@ -27,7 +27,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.currency),
             SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
-            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.input_length),
+            SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
             Url(Const(text='Если у вас есть жалобы, напишите нам'), id='url_', url=Const('https://t.me/MG3_ChTr')),
         ),
@@ -36,7 +36,7 @@ main_menu_dialog = Dialog(
 
     # pick info
     Window(
-        Const(text=_('О компании «чайна Тревел». Выберите действие ⤵️')),
+        Const(text=_('О компании «Чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
         SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.addresses),
@@ -49,11 +49,9 @@ main_menu_dialog = Dialog(
     # warehouse
     Window(
         Const(text='Обзор нашего склада. Выберите действие ⤵️'),
-        Url(Const(text='Прямая трансляция'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
-        Url(Const(text='Ссылка на фотографии'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
-        SwitchTo(Const(text='Видео 1'), id='warehouse_video_1', state=MainMenuStateGroup.warehouse_video),
-        SwitchTo(Const(text='Видео 2'), id='warehouse_video_2', state=MainMenuStateGroup.warehouse_video),
-        SwitchTo(Const(text='Видео 3'), id='warehouse_video_3', state=MainMenuStateGroup.warehouse_video),
+        Url(Const(text='Онлайн камера'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
+        Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
+        Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+QHYapxSIoO5hOTIy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
     ),
@@ -69,8 +67,8 @@ main_menu_dialog = Dialog(
     # addresses
     Window(
         Const(text='Наши адреса'),
-        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
-        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Фошань скл. N1'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Фошань скл. N2'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Пекин'), id='address_pekin', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Иу'), id='address_iu', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Россия, Люблено'), id='address_russia_1', state=MainMenuStateGroup.addresses_info),
@@ -90,7 +88,7 @@ main_menu_dialog = Dialog(
     # socials
     Window(
         Const(text='Наши соц. сети 👇'),
-        Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/MG3_ChTr')),
+        Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/china_travel_ru')),
         Url(Const(text='Instagram'), id='url_inst', url=Const('https://instagram.com/china__trevel?igshid=YmMyMTA2M2Y=')),
         Url(Const(text='ВКонтакте'), id='url_vk', url=Const('https://vk.com/chinatrevel')),
         Url(Const(text='Сайт'), id='url_vk', url=Const('https://chinatravel-tk.ru/')),
@@ -140,7 +138,7 @@ main_menu_dialog = Dialog(
     # pick requirements
     Window(
         Const(text=_('PICK_ACTION')),
-        SwitchTo(Const(text='Доставка и ее стоимость'), id='delivery', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Доставка и ее стоимость'), id='pick_delivery', state=MainMenuStateGroup.pick_delivery),
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
@@ -158,12 +156,31 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.requirements
     ),
 
-    # currency
+    # pick_delivery
+    Window(
+        Const(text='Информация о доставке'),
+        SwitchTo(Const(text='Цены'), id='delivery_1', state=MainMenuStateGroup.delivery),
+        SwitchTo(Const(text='Прейскурант'), id='delivery_2', state=MainMenuStateGroup.delivery),
+        SwitchTo(Const(text='Цены на одежду для ж/д'), id='delivery_3', state=MainMenuStateGroup.delivery),
+        SwitchTo(Const(text='Цены на одежду'), id='delivery_4', state=MainMenuStateGroup.delivery),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
+        state=MainMenuStateGroup.pick_delivery
+    ),
+
+    # delivery
     Window(
         DynamicMedia(selector='media_content'),
         Format(text='{msg_text}'),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_delivery', state=MainMenuStateGroup.pick_delivery),
+        getter=get_delivery_files,
+        state=MainMenuStateGroup.delivery
+    ),
+
+    # currency
+    Window(
+        Format(text='{currency}'),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
-        getter=get_main_menu_content,
+        getter=get_currency,
         state=MainMenuStateGroup.currency
     ),
 
@@ -244,16 +261,38 @@ main_menu_dialog = Dialog(
 
 
 
-    # calculator_data input_length
+    # start calculator_data - pick_calculator
     Window(
-        Const(text=_('INPUT_CALCULATOR_DATA')),
+        Const(text='Знаете ли вы габариты груза?'),
+        SwitchTo(Const(text='Да'), id='calculator_yes', state=MainMenuStateGroup.input_weight),
+        Button(Const(text='Нет'), id='calculator_no', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        state=MainMenuStateGroup.pick_calculator
+    ),
+
+    # input_weight
+    Window(
+        Const(text='Введите вес'),
+        TextInput(
+            id='input_weight',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_calculator', state=MainMenuStateGroup.pick_calculator),
+        state=MainMenuStateGroup.input_weight,
+    ),
+
+    # input_length
+    Window(
+        Const(text='Введите длину'),
         TextInput(
             id='input_length',
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
-        Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_weight', state=MainMenuStateGroup.input_weight),
         state=MainMenuStateGroup.input_length
     ),
 
@@ -265,6 +304,7 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_length', state=MainMenuStateGroup.input_length),
         state=MainMenuStateGroup.input_width,
     ),
@@ -277,19 +317,34 @@ main_menu_dialog = Dialog(
             type_factory=str,
             on_success=MainMenuCallbackHandler.entered_calculator_text_data,
         ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_width', state=MainMenuStateGroup.input_width),
         state=MainMenuStateGroup.input_height,
     ),
 
+    # input_density
+    Window(
+        Const(text='Введите плотность'),
+        TextInput(
+            id='input_density',
+            type_factory=str,
+            on_success=MainMenuCallbackHandler.entered_calculator_text_data,
+        ),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_height', state=MainMenuStateGroup.input_height),
+        state=MainMenuStateGroup.input_density,
+    ),
+
     # input_photo
     Window(
-        Const(text=_('Финальный шаг - прикрепите фото (не обязательно)')),
+        Const(text=_('Наберитесь терпения, прикрепите фото!')),
         MessageInput(
             func=MainMenuCallbackHandler.entered_calculator_photo,
             content_types=[ContentType.PHOTO],
         ),
-        Button(Const(text='Пропустить и отправить данные'), id='send_new_request', on_click=MainMenuCallbackHandler.create_new_request),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_heigth', state=MainMenuStateGroup.input_height),
+        #Button(Const(text='Пропустить и отправить данные'), id='send_new_request', on_click=MainMenuCallbackHandler.create_new_request),
+        Button(Const(text='Не знаю'), id='calculator_idk', on_click=MainMenuCallbackHandler.send_msg_to_manager),
+        SwitchTo(Const(text=_('BACK_BUTTON')), id='switch_to_density', state=MainMenuStateGroup.input_density),
         state=MainMenuStateGroup.input_photo
     ),
 )
