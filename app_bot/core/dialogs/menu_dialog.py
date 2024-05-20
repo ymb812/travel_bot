@@ -25,7 +25,7 @@ main_menu_dialog = Dialog(
             SwitchTo(Const(text='Отзывы'), id='go_to_reviews', state=MainMenuStateGroup.reviews),
             SwitchTo(Const(text='Кейсы клиентов'), id='go_to_cases', state=MainMenuStateGroup.pick_case),
             SwitchTo(Const(text='Актуальный курс юаня'), id='go_to_currency', state=MainMenuStateGroup.currency),
-            SwitchTo(Const(text='Условия работы'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
+            SwitchTo(Const(text='Условия работы ⤵️'), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
             SwitchTo(Const(text='Видео ответы на частые вопросы'), id='go_to_faq', state=MainMenuStateGroup.pick_faq),
             SwitchTo(Const(text='Калькулятор доставки'), id='go_to_calculator', state=MainMenuStateGroup.pick_calculator),
             Button(Const(text='Связаться с менеджером для заказа'), id='go_to_manager', on_click=MainMenuCallbackHandler.start_manager_support),
@@ -39,7 +39,7 @@ main_menu_dialog = Dialog(
         Const(text=_('О компании «Чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
-        SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.addresses),
+        SwitchTo(Const(text='Наши адреса ⤵️'), id='addresses', state=MainMenuStateGroup.addresses),
         SwitchTo(Const(text='Реквизиты компании'), id='payment_data', state=MainMenuStateGroup.info),
         Button(Const(text='Сотрудники China Trevel'), id='go_to_managers', on_click=MainMenuCallbackHandler.open_managers_cards),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
@@ -51,7 +51,7 @@ main_menu_dialog = Dialog(
         Const(text='Обзор нашего склада. Выберите действие ⤵️'),
         Url(Const(text='Онлайн камера'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
         Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
-        Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+QHYapxSIoO5hOTIy')),
+        Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+W1Agp7XJS2YxYjcy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
     ),
@@ -66,7 +66,7 @@ main_menu_dialog = Dialog(
 
     # addresses
     Window(
-        Const(text='Наши адреса'),
+        Const(text='Наши адреса ⤵️'),
         SwitchTo(Const(text='Китай, Фошань скл. N1'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Фошань скл. N2'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Пекин'), id='address_pekin', state=MainMenuStateGroup.addresses_info),
@@ -87,7 +87,7 @@ main_menu_dialog = Dialog(
 
     # socials
     Window(
-        Const(text='Наши соц. сети 👇'),
+        Const(text='Наши соц.сети ⤵️'),
         Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/china_travel_ru')),
         Url(Const(text='Instagram'), id='url_inst', url=Const('https://instagram.com/china__trevel?igshid=YmMyMTA2M2Y=')),
         Url(Const(text='ВКонтакте'), id='url_vk', url=Const('https://vk.com/chinatrevel')),
@@ -98,9 +98,9 @@ main_menu_dialog = Dialog(
 
     # reviews
     Window(
-        Const(text='Наши отзывы'),
+        Const(text='Наши отзывы ⤵️'),
         Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://t.me/MG3_ChTr')),
-        Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/MG3_ChTr')),
+        Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/+V5I6_2tW-uZiZDUy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.reviews
     ),
@@ -186,7 +186,7 @@ main_menu_dialog = Dialog(
 
     # pick_case
     Window(
-        Const(text='Наши кейсы'),
+        Const(text='Наши кейсы ⤵️'),
         CustomPager(
             Multicolumn(
                 Select(
@@ -272,7 +272,7 @@ main_menu_dialog = Dialog(
 
     # input_weight
     Window(
-        Const(text='Введите вес'),
+        Const(text='Введите вес в килограммах. Или. Введите вес в кг'),
         TextInput(
             id='input_weight',
             type_factory=str,
@@ -285,7 +285,7 @@ main_menu_dialog = Dialog(
 
     # input_length
     Window(
-        Const(text='Введите длину'),
+        Const(text='Введите длину в см.'),
         TextInput(
             id='input_length',
             type_factory=str,
@@ -298,7 +298,7 @@ main_menu_dialog = Dialog(
 
     # input_width
     Window(
-        Const(text='Введите ширину'),
+        Const(text='Введите ширину в см.'),
         TextInput(
             id='input_width',
             type_factory=str,
@@ -311,7 +311,7 @@ main_menu_dialog = Dialog(
 
     # input_height
     Window(
-        Const(text='Введите высоту'),
+        Const(text='Введите высоту в см.'),
         TextInput(
             id='input_height',
             type_factory=str,
@@ -324,7 +324,7 @@ main_menu_dialog = Dialog(
 
     # input_density
     Window(
-        Const(text='Введите плотность'),
+        Const(text='Введите плотность кг/м³'),
         TextInput(
             id='input_density',
             type_factory=str,
