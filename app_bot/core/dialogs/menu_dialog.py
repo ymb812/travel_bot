@@ -36,7 +36,7 @@ main_menu_dialog = Dialog(
 
     # pick info
     Window(
-        Const(text=_('О компании «чайна Тревел». Выберите действие ⤵️')),
+        Const(text=_('О компании «Чайна Тревел». Выберите действие ⤵️')),
         SwitchTo(Const(text='Обзор нашего склада'), id='info', state=MainMenuStateGroup.warehouse),
         SwitchTo(Const(text='Соц.сети'), id='socials', state=MainMenuStateGroup.socials),
         SwitchTo(Const(text='Наши адреса'), id='addresses', state=MainMenuStateGroup.addresses),
@@ -67,8 +67,8 @@ main_menu_dialog = Dialog(
     # addresses
     Window(
         Const(text='Наши адреса'),
-        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
-        SwitchTo(Const(text='Китай, Фошань'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Фошань скл. N1'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
+        SwitchTo(Const(text='Китай, Фошань скл. N2'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Пекин'), id='address_pekin', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Иу'), id='address_iu', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Россия, Люблено'), id='address_russia_1', state=MainMenuStateGroup.addresses_info),
@@ -88,7 +88,7 @@ main_menu_dialog = Dialog(
     # socials
     Window(
         Const(text='Наши соц. сети 👇'),
-        Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/MG3_ChTr')),
+        Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/china_travel_ru')),
         Url(Const(text='Instagram'), id='url_inst', url=Const('https://instagram.com/china__trevel?igshid=YmMyMTA2M2Y=')),
         Url(Const(text='ВКонтакте'), id='url_vk', url=Const('https://vk.com/chinatrevel')),
         Url(Const(text='Сайт'), id='url_vk', url=Const('https://chinatravel-tk.ru/')),
