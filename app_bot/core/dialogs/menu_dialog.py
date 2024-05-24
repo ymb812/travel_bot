@@ -50,8 +50,8 @@ main_menu_dialog = Dialog(
     Window(
         Const(text='Обзор нашего склада. Выберите действие ⤵️'),
         Url(Const(text='Онлайн камера'), id='url_warehouse', url=Const('https://t.me/china_travel_ru/865')),
-        Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/China-Trevel-05-16')),
-        Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+QHYapxSIoO5hOTIy')),
+        Url(Const(text='Фото'), id='url_telegraph', url=Const('https://telegra.ph/Obzor-nashego-sklada-05-20')),
+        Url(Const(text='Видео'), id='url_tg_channel', url=Const('https://t.me/+W1Agp7XJS2YxYjcy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_info', state=MainMenuStateGroup.pick_info),
         state=MainMenuStateGroup.warehouse
     ),
@@ -66,7 +66,7 @@ main_menu_dialog = Dialog(
 
     # addresses
     Window(
-        Const(text='Наши адреса'),
+        Const(text='Наши адреса ⤵️'),
         SwitchTo(Const(text='Китай, Фошань скл. N1'), id='address_foshan_1', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Фошань скл. N2'), id='address_foshan_2', state=MainMenuStateGroup.addresses_info),
         SwitchTo(Const(text='Китай, Пекин'), id='address_pekin', state=MainMenuStateGroup.addresses_info),
@@ -87,7 +87,7 @@ main_menu_dialog = Dialog(
 
     # socials
     Window(
-        Const(text='Наши соц. сети 👇'),
+        Const(text='Наши соц.сети ⤵️'),
         Url(Const(text='Telegram'), id='url_tg', url=Const('https://t.me/china_travel_ru')),
         Url(Const(text='Instagram'), id='url_inst', url=Const('https://instagram.com/china__trevel?igshid=YmMyMTA2M2Y=')),
         Url(Const(text='ВКонтакте'), id='url_vk', url=Const('https://vk.com/chinatrevel')),
@@ -98,9 +98,9 @@ main_menu_dialog = Dialog(
 
     # reviews
     Window(
-        Const(text='Наши отзывы'),
-        Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://t.me/MG3_ChTr')),
-        Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/MG3_ChTr')),
+        Const(text='Наши отзывы ⤵️'),
+        Url(Const(text='Фото отзывы'), id='url_tg_photo', url=Const('https://telegra.ph/Nashi-otzyvy-05-20')),
+        Url(Const(text='Видео отзывы'), id='url_tg_video', url=Const('https://t.me/+V5I6_2tW-uZiZDUy')),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.reviews
     ),
@@ -137,12 +137,13 @@ main_menu_dialog = Dialog(
 
     # pick requirements
     Window(
-        Const(text=_('PICK_ACTION')),
-        SwitchTo(Const(text='Доставка и ее стоимость'), id='pick_delivery', state=MainMenuStateGroup.pick_delivery),
+        Const(text='Условия работы ⤵️'),
+        Url(Const(text='Доставка и ее стоимость'), id='pick_delivery', url=Const(text='https://telegra.ph/Dostavka-i-eyo-stoimost-05-20')),
         SwitchTo(Const(text='Условия по выкупу'), id='requirements', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Poizon'), id='poizon', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text='Alipay'), id='alipay', state=MainMenuStateGroup.requirements),
-        SwitchTo(Const(text='Шаблон договора'), id='contract', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Шаблон договора для физ. лиц'), id='contract_fiz', state=MainMenuStateGroup.requirements),
+        SwitchTo(Const(text='Шаблон договора для юр. лиц'), id='contract_ur', state=MainMenuStateGroup.requirements),
         SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_menu', state=MainMenuStateGroup.menu),
         state=MainMenuStateGroup.pick_requirements
     ),
@@ -156,25 +157,25 @@ main_menu_dialog = Dialog(
         state=MainMenuStateGroup.requirements
     ),
 
-    # pick_delivery
-    Window(
-        Const(text='Информация о доставке'),
-        SwitchTo(Const(text='Цены'), id='delivery_1', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Прейскурант'), id='delivery_2', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Цены на одежду для ж/д'), id='delivery_3', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text='Цены на одежду'), id='delivery_4', state=MainMenuStateGroup.delivery),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
-        state=MainMenuStateGroup.pick_delivery
-    ),
-
-    # delivery
-    Window(
-        DynamicMedia(selector='media_content'),
-        Format(text='{msg_text}'),
-        SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_delivery', state=MainMenuStateGroup.pick_delivery),
-        getter=get_delivery_files,
-        state=MainMenuStateGroup.delivery
-    ),
+    # # pick_delivery
+    # Window(
+    #     Const(text='Информация о доставке'),
+    #     SwitchTo(Const(text='Цены'), id='delivery_1', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Прейскурант'), id='delivery_2', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Цены на одежду для ж/д'), id='delivery_3', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text='Цены на одежду'), id='delivery_4', state=MainMenuStateGroup.delivery),
+    #     SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_requirements', state=MainMenuStateGroup.pick_requirements),
+    #     state=MainMenuStateGroup.pick_delivery
+    # ),
+    #
+    # # delivery
+    # Window(
+    #     DynamicMedia(selector='media_content'),
+    #     Format(text='{msg_text}'),
+    #     SwitchTo(Const(text=_('BACK_BUTTON')), id='go_to_delivery', state=MainMenuStateGroup.pick_delivery),
+    #     getter=get_delivery_files,
+    #     state=MainMenuStateGroup.delivery
+    # ),
 
     # currency
     Window(
@@ -186,7 +187,7 @@ main_menu_dialog = Dialog(
 
     # pick_case
     Window(
-        Const(text='Наши кейсы'),
+        Const(text='Наши кейсы ⤵️'),
         CustomPager(
             Multicolumn(
                 Select(
@@ -272,7 +273,7 @@ main_menu_dialog = Dialog(
 
     # input_weight
     Window(
-        Const(text='Введите вес'),
+        Const(text='Введите вес в килограммах. Или. Введите вес в кг'),
         TextInput(
             id='input_weight',
             type_factory=str,
@@ -285,7 +286,7 @@ main_menu_dialog = Dialog(
 
     # input_length
     Window(
-        Const(text='Введите длину'),
+        Const(text='Введите длину в см.'),
         TextInput(
             id='input_length',
             type_factory=str,
@@ -298,7 +299,7 @@ main_menu_dialog = Dialog(
 
     # input_width
     Window(
-        Const(text='Введите ширину'),
+        Const(text='Введите ширину в см.'),
         TextInput(
             id='input_width',
             type_factory=str,
@@ -311,7 +312,7 @@ main_menu_dialog = Dialog(
 
     # input_height
     Window(
-        Const(text='Введите высоту'),
+        Const(text='Введите высоту в см.'),
         TextInput(
             id='input_height',
             type_factory=str,
@@ -324,7 +325,7 @@ main_menu_dialog = Dialog(
 
     # input_density
     Window(
-        Const(text='Введите плотность'),
+        Const(text='Введите плотность кг/м³'),
         TextInput(
             id='input_density',
             type_factory=str,
