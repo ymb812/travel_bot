@@ -1,3 +1,4 @@
+import logging
 from aiogram.enums import ContentType
 from core.database.models import User, UserLog, FAQ, Post, ManagerCard, Case, Currency
 from aiogram_dialog import DialogManager
@@ -5,12 +6,16 @@ from aiogram_dialog.api.entities import MediaAttachment
 from core.dialogs.callbacks import get_username_or_link
 from settings import settings
 
+logger = logging.getLogger(__name__)
+
 
 async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
     # add info about User's state
-    state = dialog_manager.event.data.split('')[-1]
-
-    await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+    try:
+        state = dialog_manager.event.data.split('')[-1]
+        await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+    except Exception as e:
+        logger.error(f'Error to add user_log', exc_info=e)
 
     post_id = None
     if 'info' in dialog_manager.event.data:  # useless cuz of new window
@@ -59,6 +64,13 @@ async def get_main_menu_content(dialog_manager: DialogManager, **kwargs):
 
 
 async def get_warehouse_video(dialog_manager: DialogManager, **kwargs):
+    # add info about User's state
+    try:
+        state = dialog_manager.event.data.split('')[-1]
+        await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+    except Exception as e:
+        logger.error(f'Error to add user_log', exc_info=e)
+
     if 'warehouse_video_1' in dialog_manager.event.data:  # useless cuz of new window
         post_id = 1001
     elif 'warehouse_video_2' in dialog_manager.event.data:  # useless cuz of new window
@@ -75,6 +87,13 @@ async def get_warehouse_video(dialog_manager: DialogManager, **kwargs):
 
 
 async def get_delivery_files(dialog_manager: DialogManager, **kwargs):
+    # add info about User's state
+    try:
+        state = dialog_manager.event.data.split('')[-1]
+        await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+    except Exception as e:
+        logger.error(f'Error to add user_log', exc_info=e)
+
     if 'delivery_1' in dialog_manager.event.data:
         post_id = 2001
     elif 'delivery_2' in dialog_manager.event.data:
@@ -94,6 +113,13 @@ async def get_delivery_files(dialog_manager: DialogManager, **kwargs):
 
 
 async def get_addresses_content(dialog_manager: DialogManager, **kwargs):
+    # add info about User's state
+    try:
+        state = dialog_manager.event.data.split('')[-1]
+        await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=state)
+    except Exception as e:
+        logger.error(f'Error to add user_log', exc_info=e)
+
     if 'address_foshan_1' in dialog_manager.event.data:
         msg_text = '''Фошань 
 

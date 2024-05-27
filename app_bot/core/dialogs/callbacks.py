@@ -10,7 +10,7 @@ from aiogram_dialog.widgets.kbd import Select, Button
 from core.states.main_menu import MainMenuStateGroup
 from core.states.manager_support import ManagerSupportStateGroup
 from core.states.manager import ManagerStateGroup
-from core.database.models import User, Request, RequestLog, ManagerCard
+from core.database.models import User, Request, RequestLog, ManagerCard, UserLog
 from core.keyboards.inline import add_comment_kb
 from core.user_manager.user_manager import add_manager_to_user
 from core.utils.texts import _
@@ -123,7 +123,7 @@ async def send_new_request(request: Request, bot: Bot):
 
 class MainMenuCallbackHandler:
     @classmethod
-    async def selected_product(
+    async def selected_question(
             cls,
             callback: CallbackQuery,
             widget: Select,
@@ -141,6 +141,12 @@ class MainMenuCallbackHandler:
             dialog_manager: DialogManager,
             item_id: str,
     ):
+        # add info about User's state
+        try:
+            await UserLog.create_log(user_id=dialog_manager.event.from_user.id, state=f'case_{item_id}')
+        except Exception as e:
+            logger.error(f'Error to add user_log', exc_info=e)
+
         dialog_manager.dialog_data['case_id'] = item_id
         await dialog_manager.switch_to(MainMenuStateGroup.case)
 
