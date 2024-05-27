@@ -34,7 +34,9 @@ async def manager_daily_excel(manager: User):
     yesterday = today - timedelta(days=1)
 
     # get user w/o log with request in RequestLog
-    users = await User.filter(~Q(status='manager') & ~Q(status='admin') & Q(manager=manager))
+    users = await User.filter(
+        ~Q(status='manager') & ~Q(status='admin') & Q(manager_id=manager.user_id) & Q(last_activity__range=(yesterday, today))
+    )
     logs_with_request = await RequestLog.filter(~Q(request_id=None) & Q(created_at__range=(yesterday, today)))
     users_with_request = list(set([await log.user for log in logs_with_request]))
     for user in users:
