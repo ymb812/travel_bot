@@ -26,7 +26,7 @@ async def create_excel(model):
     return file_in_memory
 
 
-async def manager_daily_excel():
+async def manager_daily_excel(manager: User):
     file_in_memory = io.BytesIO()
     data = []
 
@@ -34,8 +34,8 @@ async def manager_daily_excel():
     yesterday = today - timedelta(days=1)
 
     # get user w/o log with request in RequestLog
-    users = await User.filter(~Q(status='manager') & ~Q(status='admin'))
-    logs_with_request = await RequestLog.filter(~Q(request_id=None))  # & Q(created_at__range=(yesterday, today)))
+    users = await User.filter(~Q(status='manager') & ~Q(status='admin') & Q(manager=manager))
+    logs_with_request = await RequestLog.filter(~Q(request_id=None) & Q(created_at__range=(yesterday, today)))
     users_with_request = list(set([await log.user for log in logs_with_request]))
     for user in users:
         if user in users_with_request:  # we are interested in user w/o any requests
