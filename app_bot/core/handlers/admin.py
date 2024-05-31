@@ -32,7 +32,7 @@ async def manager_excel_stats(message: types.Message):
     if user.status not in ['admin', 'manager']:
         return
 
-    file_in_memory = await manager_daily_excel()
+    file_in_memory = await manager_daily_excel(manager=user)
     await message.answer_document(document=types.BufferedInputFile(file_in_memory.read(), filename='Users.xlsx'))
 
 

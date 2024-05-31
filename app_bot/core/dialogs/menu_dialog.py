@@ -239,7 +239,7 @@ main_menu_dialog = Dialog(
                 items='questions',
                 item_id_getter=lambda item: item.id,
                 text=Format(text='Вопрос {item.order_priority}'),
-                on_click=MainMenuCallbackHandler.selected_product,
+                on_click=MainMenuCallbackHandler.selected_question,
             ),
             id='question_group',
             height=settings.faq_per_page_height,

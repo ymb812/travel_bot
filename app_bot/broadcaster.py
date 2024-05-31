@@ -127,11 +127,17 @@ class Broadcaster(object):
 
     @classmethod
     async def send_excel_and_add_managers_to_users(cls):
+        # add managers
+        users_wo_manager = await User.filter((~Q(status='manager') | Q(status=None)) & Q(manager_id=None))
+        for user in users_wo_manager:
+            manager = await add_manager_to_user(user_id=user.user_id, without_request=True)
+            logger.info(f'user_id={user.user_id} was added to manager_id={manager.user_id}')
+
         # send excel with user w/o manager
-        file_in_memory = (await manager_daily_excel()).read()
         managers = await User.filter(status=User.StatusType.manager.value)
         for manager in managers:
             try:
+                file_in_memory = (await manager_daily_excel(manager=manager)).read()
                 await bot.send_document(
                     chat_id=manager.user_id,
                     document=types.BufferedInputFile(file_in_memory, filename='Users.xlsx'),
@@ -139,12 +145,6 @@ class Broadcaster(object):
                 logger.error(f'File for managers was sent to {manager.user_id}')
             except Exception as e:
                 logger.error(f'File for managers was NOT sent to {manager.user_id}', exc_info=e)
-
-        # add managers
-        users_wo_manager = await User.filter((~Q(status='manager') | Q(status=None)) & Q(manager_id=None))
-        for user in users_wo_manager:
-            manager = await add_manager_to_user(user_id=user.user_id, without_request=True)
-            logger.info(f'user_id={user.user_id} was added to manager_id={manager.user_id}')
 
 
     @classmethod
