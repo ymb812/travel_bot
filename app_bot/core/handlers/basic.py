@@ -50,9 +50,7 @@ async def input_comment_handler(message: types.Message, bot: Bot, state: FSMCont
     await state.clear()
 
 
-@router.channel_post(lambda m: m.text and 'Курс сегодня ' in m.text)
+@router.message(lambda m: m.text and 'Курс сегодня ' in m.text and m.chat.id == settings.currency_chat_id)
 async def handle_currency(message: types.Message):
-    if str(message.chat.id) != str(settings.required_channel_id):
-        return
     currency = message.text
     await Currency.update_or_create(defaults={'currency': currency})
